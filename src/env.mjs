@@ -72,6 +72,7 @@ if (!skip) {
   );
 
   if (parsed.success === false) {
+    console.info('Make sure there is an .env file in the root directory.')
     console.error(
       "❌ Invalid environment variables:",
       parsed.error.flatten().fieldErrors,
