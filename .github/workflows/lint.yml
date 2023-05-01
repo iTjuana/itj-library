@@ -33,8 +33,14 @@ jobs:
     - name: Install Node.js dependencies
       run: npm ci
       
-    - name: Run linters
-      uses: wearerequired/lint-action@v2
-      with:
-        eslint: true
-        prettier: true
+    - name: Create dummy .env
+      run: cp .env.example .env
+      
+    - name: Run Next Lint
+      run: npm run lint
+      
+#     - name: Run linters
+#       uses: wearerequired/lint-action@v2
+#       with:
+#         eslint: true
+#         prettier: true
