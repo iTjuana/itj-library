@@ -30,5 +30,3 @@ Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/ver
 ## Additional reads
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
-
-will this work?
