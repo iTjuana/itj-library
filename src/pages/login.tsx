@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 
 const LogIn: NextPage = () => {
-  let [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   return (
     <>
@@ -94,7 +94,7 @@ const LogIn: NextPage = () => {
             </form>
 
             <div className="flex gap-2">
-              <p>Don't have an account?</p>
+              <p>Don&#39;t have an account?</p>
               <Link
                 className="text-primary underline"
                 href="https://app.micoach.io"
