@@ -1,9 +1,9 @@
 ### Requirements for Contributing a Bug Fix
 
 - Fill out the template below. Any pull request that does not include enough information to be reviewed in a timely manner may be closed at the maintainers' discretion.
-- The pull request must only fix an existing bug. To contribute other changes, you must use a different template. You can see all templates at <https://github.com/atom/.github/tree/master/.github/PULL_REQUEST_TEMPLATE>.
-- The pull request must update the test suite to demonstrate the changed functionality. For guidance, please see <https://flight-manual.atom.io/hacking-atom/sections/writing-specs/>.
-- After you create the pull request, all status checks must be pass before a maintainer reviews your contribution. For more details, please see <https://github.com/atom/.github/tree/master/CONTRIBUTING.md#pull-requests>.
+- The pull request must only fix an existing bug. To contribute other changes, you must use a different template. You can see all templates at <https://github.com/iTjuana/itj-library/tree/main/.github/PULL_REQUEST_TEMPLATE>.
+- The pull request must update the test suite to demonstrate the changed functionality.
+- After you create the pull request, all status checks must be pass before a maintainer reviews your contribution. For more details, please see <https://github.com/iTjuana/itj-library/blob/main/CONTRIBUTING.md#pull-requests>.
 
 ### Identify the Bug
 
@@ -45,7 +45,7 @@ What process did you follow to verify that the change has not introduced any reg
 <!--
 
 Please describe the changes in a single line that explains this improvement in
-terms that a user can understand. This text will be used in Atom's release notes.
+terms that a user can understand.
 
 If this change is not user-facing or notable enough to be included in release notes
 you may use the strings "Not applicable" or "N/A" here.
