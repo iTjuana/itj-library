@@ -36,8 +36,11 @@ jobs:
       - name: Create dummy .env
         run: cp .env.example .env
 
-      - name: Don't test env validatios
+      - name: Don't validate .env variables
         run: printf '\nSKIP_ENV_VALIDATION="true"' >> .env
+
+      - name: .env file to use
+        run: cat .env
 
       - name: Run Next Lint
         run: npm run lint
