@@ -37,7 +37,7 @@ jobs:
       run: cp .env.example .env
       
     - name: Add missing property .env from .env.example
-      run: echo 'NEXTAUTH_SECRET="."' >> ".env"
+      run: echo 'NODE_ENV="test"' >> ".env"
       
     - name: Run Next Lint
       run: npm run lint
