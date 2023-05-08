@@ -5,9 +5,9 @@ name: Lint
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ ]
+    branches: []
 
 jobs:
   run-linters:
@@ -20,31 +20,33 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Check out Git repository
-      uses: actions/checkout@v3
-      
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    # ESLint and Prettier must be in `package.json`
-    - name: Install Node.js dependencies
-      run: npm ci
-      
-    - name: Create dummy .env
-      run: cp .env.example .env
-      
-    - name: Don't test env validatios
-      run: echo 'SKIP_ENV_VALIDATION="true"' >> ".env"
-      
-#    - name: Add NODE_ENV property .env to "test"
-#      run: echo 'NODE_ENV="test"' >> ".env"
-      
-    - name: Run Next Lint
-      run: npm run lint
-      
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      # ESLint and Prettier must be in `package.json`
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Create dummy .env
+        run: cp .env.example .env
+
+      - name: Don't test env validatios
+        run: echo 'SKIP_ENV_VALIDATION="true"' >> ".env"
+
+      - name: Verify .env file creation
+        run: cat .env
+
+      #    - name: Add NODE_ENV property .env to "test"
+      #      run: echo 'NODE_ENV="test"' >> ".env"
+
+      - name: Run Next Lint
+        run: npm run lint
 #     - name: Run linters
 #       uses: wearerequired/lint-action@v2
 #       with:
