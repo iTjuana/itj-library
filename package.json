@@ -9,7 +9,7 @@
     "lint": "next lint",
     "start": "next start",
     "test": "jest --passWithNoTests",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage --passWithNoTests"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
