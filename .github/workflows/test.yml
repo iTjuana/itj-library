@@ -24,7 +24,6 @@ jobs:
         node-version: ${{ env.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm test
     - run: npm run coverage
 
     - name: Upload code coverage report
