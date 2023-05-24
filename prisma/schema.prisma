@@ -6,19 +6,19 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
+//Luego borrar esto
 model Example {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    nameAt String?
 }
+
 
 // Necessary for Next auth
 model Account {
@@ -55,6 +55,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    transaction   Transaction[]
 }
 
 model VerificationToken {
@@ -64,3 +65,28 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+//Tablas itj 
+
+model Inventary {
+    id           String   @id @default(cuid())
+    isbn         String   //@index
+    status       String   //enum
+    format       String   //enum
+    condition    String   //enum
+    bookOwner    String
+    dateAdded    DateTime @default(now())
+    lastUpdate   DateTime @updatedAt
+    transaction  Transaction[]
+}
+
+model Transaction {
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String // relation scalar field (used in the `@relation` attribute above)
+  inventary    Inventary    @relation(fields: [inventaryId], references: [id], onDelete: Cascade)
+  inventaryId  String // relation scalar field (used in the `@relation` attribute above)
+  borrowedDate DateTime  
+  dueDate DateTime 
+  @@id([userId, inventaryId])
+}
+
