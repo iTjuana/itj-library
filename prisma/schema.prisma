@@ -11,6 +11,7 @@ datasource db {
   relationMode = "prisma"
 }
 
+//Luego borrar esto
 model Example {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
@@ -84,8 +85,8 @@ model Transaction {
   userId       String // relation scalar field (used in the `@relation` attribute above)
   inventary    Inventary    @relation(fields: [inventaryId], references: [id], onDelete: Cascade)
   inventaryId  String // relation scalar field (used in the `@relation` attribute above)
-  borrowedDate DateTime     @default(now())
-  dueDate      DateTime     //set default now() + 30
+  borrowedDate DateTime  
+  dueDate DateTime 
   @@id([userId, inventaryId])
 }
 
