@@ -1,6 +1,4 @@
 import { type NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
 import Layout from "~/components/layout";
 
 const Home: NextPage = () => {
@@ -55,9 +53,9 @@ const Home: NextPage = () => {
               <ol className="list-decimal pl-8">
                 <li>Visit the online library website.</li>
                 <li>
-                  In the contact section, search for Melissa Lira's name or look
-                  for a specific department or person responsible for handling
-                  donations.
+                  In the contact section, search for Melissa Lira&#39;s name or
+                  look for a specific department or person responsible for
+                  handling donations.
                 </li>
                 <li>
                   Open your email client or use the contact form provided on the
