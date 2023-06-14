@@ -1,7 +1,11 @@
 import { type NextPage } from "next";
+import { trpc } from "utils/trpc";
 import Layout from "~/components/layout";
 
 const Home: NextPage = () => {
+  const hello = trpc.hello.useQuery({ text: "client" });
+  if (!hello.data) console.log("waiting");
+  else console.log(`got: ${hello.data.greeting}`);
   return (
     <>
       <Layout
