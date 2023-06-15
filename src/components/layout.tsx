@@ -24,7 +24,7 @@ const Layout: React.FunctionComponent<Props> = ({
           name="description"
           content={description ? description : "Created by Rubber Ducks"}
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/itj_logo_w.ico" />
       </Head>
       <div className="flex h-screen w-full flex-col">
         <header className="flex w-full items-center justify-between bg-white px-8 py-6 drop-shadow-lg sm:px-32">
