@@ -1,4 +1,4 @@
-import { GetServerSideProps } from "next";
+import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,16 +21,19 @@ type Book = {
   };
 };
 
-interface BooksProps {
-  books: Book[];
+interface BookResponse {
+  records: { key: Book };
 }
 
 interface BookProps {
-  book: Book;
+  book: Book | null;
 }
-export const getServerSideProps: GetServerSideProps<{
-  books: Book[];
-}> = async () => {
+
+interface BooksProps {
+  books: (Book | null)[];
+}
+
+export const getServerSideProps: GetServerSideProps<BooksProps> = async () => {
   // here you should get the books from the database
   // dummy catalog
   const isbns = [
@@ -52,7 +55,7 @@ export const getServerSideProps: GetServerSideProps<{
 
   const books = await Promise.all(
     isbns.map(async (isbn) => {
-      const res = await (
+      const res: BookResponse = await (
         await fetch(
           `http://openlibrary.org/api/volumes/brief/isbn/${isbn}.json`
         )
@@ -60,14 +63,11 @@ export const getServerSideProps: GetServerSideProps<{
 
       if (Array.isArray(res) && !res.length) return null;
 
-      const key = Object.keys(res.records)[0] || "";
-      const book = res.records[key];
-      return book;
+      const key: string = Object.keys(res.records)[0] || "";
+
+      // Got lint fix from: https://stackoverflow.com/questions/57086672/element-implicitly-has-an-any-type-because-expression-of-type-string-cant-b
+      return res.records[key as keyof typeof res.records];
     })
-  );
-  console.log(books);
-  const resBook = await fetch(
-    "http://openlibrary.org/api/volumes/brief/isbn/.json"
   );
   return { props: { books } };
 };
@@ -81,22 +81,12 @@ const BookComponent: React.FunctionComponent<BookProps> = ({ book }) => {
       href={book.data.key}
       className="flex w-1/2 flex-col items-center sm:w-1/5"
     >
-      {book.data.cover ? (
-        <Image
-          src={book.data.cover.large}
-          width={300}
-          height={300}
-          alt="cover"
-        />
-      ) : (
-        <Image
-          src="/cover-unavailable.jpg"
-          width={300}
-          height={300}
-          alt="unavailable cover"
-        />
-      )}
-
+      <Image
+        src={book.data.cover?.large ?? "/cover-unavailable.jpg"}
+        width={300}
+        height={300}
+        alt="cover"
+      />
       <p>{book.data.title}</p>
       <hr className="w-2/3" />
       <p className="text-[#556581]">{book.data.authors[0].name}</p>
@@ -117,7 +107,7 @@ const Inventory = ({ books }: BooksProps) => {
           <h1 className="text-4xl font-medium text-[#1C325F]">Catalog</h1>
           <div className="flex flex-wrap justify-center gap-3 sm:w-5/6">
             {books.map((book) => (
-              <BookComponent book={book}></BookComponent>
+              <BookComponent book={book} key={book?.data.key}></BookComponent>
             ))}
           </div>
         </main>
