@@ -1,8 +1,7 @@
-import {
-  GetServerSideProps,
-} from "next";
+import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import Layout from "~/components/layout";
 
 type Book = {
@@ -12,6 +11,7 @@ type Book = {
   data: {
     title: string;
     subtitle: string;
+    key: string;
     authors: [{ url: string; name: string }];
     number_of_pages: number;
     publishers: [{ name: string }];
@@ -31,45 +31,80 @@ interface BookProps {
 export const getServerSideProps: GetServerSideProps<{
   books: Book[];
 }> = async () => {
-  const isbns = ["6077476714", "6078589172", "6075507712", "6073828691", "0151010269"];
-  const books = await Promise.all(isbns.map(async isbn => {
-    const resp = await fetch(`http://openlibrary.org/api/volumes/brief/isbn/${isbn}.json`)
-    const resJson = await resp.json()
+  // here you should get the books from the database
+  // dummy catalog
+  const isbns = [
+    "8420473359",
+    "4087603512",
+    "9780982788097",
+    "9781787533202",
+    "613997026",
+    "9788418933011",
+    "2080701975",
+    "9780719048746",
+    "9780446405560",
+    "2081427117",
+    "9789123649709",
+    "9100579319",
+    "9789123649709",
+    "9780156012072",
+  ];
 
-    if (Array.isArray(resJson) && !resJson.length)
-      return null
+  const books = await Promise.all(
+    isbns.map(async (isbn) => {
+      const res = await (
+        await fetch(
+          `http://openlibrary.org/api/volumes/brief/isbn/${isbn}.json`
+        )
+      ).json();
 
-    const key = Object.keys(resJson.records)[0] || "";
-    const book = resJson.records[key];
-    return book;
-  }));
-  console.log(books)
+      if (Array.isArray(res) && !res.length) return null;
+
+      const key = Object.keys(res.records)[0] || "";
+      const book = res.records[key];
+      return book;
+    })
+  );
+  console.log(books);
   const resBook = await fetch(
     "http://openlibrary.org/api/volumes/brief/isbn/.json"
   );
   return { props: { books } };
 };
 
-const BookComponent:React.FunctionComponent<BookProps> = ({book}) => {
-  if(!book){
-    return <></>
+const BookComponent: React.FunctionComponent<BookProps> = ({ book }) => {
+  if (!book) {
+    return <></>;
   }
   return (
-    <>
-      <div>
-        <p>{book.data.title}</p>
+    <Link
+      href={book.data.key}
+      className="flex w-1/2 flex-col items-center sm:w-1/5"
+    >
+      {book.data.cover ? (
         <Image
           src={book.data.cover.large}
-          width={500}
-          height={500}
+          width={300}
+          height={300}
           alt="cover"
         />
-      </div>
-    </>
-  ); 
-}
+      ) : (
+        <Image
+          src="/cover-unavailable.jpg"
+          width={300}
+          height={300}
+          alt="unavailable cover"
+        />
+      )}
 
-const LogIn = ({ books }: BooksProps) => {
+      <p>{book.data.title}</p>
+      <hr className="w-2/3" />
+      <p className="text-[#556581]">{book.data.authors[0].name}</p>
+    </Link>
+  );
+};
+
+const Inventory = ({ books }: BooksProps) => {
   return (
     <>
       <Head>
@@ -77,16 +112,18 @@ const LogIn = ({ books }: BooksProps) => {
         <meta name="description" content="Testing cors" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="grid h-screen grid-cols-1 items-center gap-0 bg-white md:grid-cols-2">
-        <Layout title="Inventory">
-          <div>
-            {books.map(book => <BookComponent book={book}></BookComponent>)}
+      <Layout title="Inventory">
+        <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
+          <h1 className="text-4xl font-medium text-[#1C325F]">Catalog</h1>
+          <div className="flex flex-wrap justify-center gap-3 sm:w-5/6">
+            {books.map((book) => (
+              <BookComponent book={book}></BookComponent>
+            ))}
           </div>
-          
-        </Layout>
-      </main>
+        </main>
+      </Layout>
     </>
   );
 };
 
-export default LogIn;
+export default Inventory;
