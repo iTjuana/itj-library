@@ -94,7 +94,7 @@ const BookComponent: React.FunctionComponent<BookProps> = ({ book }) => {
   );
 };
 
-const Inventory = ({ books }: BooksProps) => {
+const Catalog = ({ books }: BooksProps) => {
   return (
     <>
       <Head>
@@ -102,7 +102,7 @@ const Inventory = ({ books }: BooksProps) => {
         <meta name="description" content="Testing cors" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Layout title="Inventory">
+      <Layout title="Catalog">
         <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
           <h1 className="text-4xl font-medium text-[#1C325F]">Catalog</h1>
           <div className="flex flex-wrap justify-center gap-3 sm:w-5/6">
@@ -116,4 +116,4 @@ const Inventory = ({ books }: BooksProps) => {
   );
 };
 
-export default Inventory;
+export default Catalog;
