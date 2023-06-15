@@ -55,11 +55,11 @@ export const getServerSideProps: GetServerSideProps<BooksProps> = async () => {
 
   const books = await Promise.all(
     isbns.map(async (isbn) => {
-      const res: BookResponse = await (
+      const res = (await (
         await fetch(
           `http://openlibrary.org/api/volumes/brief/isbn/${isbn}.json`
         )
-      ).json();
+      ).json()) as BookResponse;
 
       if (Array.isArray(res) && !res.length) return null;
 
