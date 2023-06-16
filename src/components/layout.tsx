@@ -2,6 +2,7 @@ import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import Navbar from "./navbar";
 
 // todo: check if this is the best way - https://nextjs.org/docs/basic-features/layouts
 
@@ -29,7 +30,7 @@ const Layout: React.FunctionComponent<Props> = ({
       <div className="flex h-screen w-full flex-col">
         <header className="flex w-full items-center justify-between bg-white px-8 py-6 drop-shadow-lg sm:px-32">
           <Image src="/itj_library.svg" alt="itj" width="100" height="32" />
-          {/* Place Navbar component here */}
+          <Navbar />
         </header>
 
         <div className="grow">{children}</div>
