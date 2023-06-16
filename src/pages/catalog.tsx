@@ -1,6 +1,5 @@
 import { type GetServerSideProps } from "next";
 import {
-  type Book,
   type BookResponse,
   type BooksProps,
   SimpleBook,
@@ -10,9 +9,8 @@ const isObjectEmpty = (object: object) => {
   return Object.keys(object).length === 0 && object.constructor === Object;
 };
 
-export const getServerSideProps: GetServerSideProps<{
-  books: BooksProps;
-}> = async () => {
+// @ts-ignore
+export const getServerSideProps: GetServerSideProps<BooksProps> = async () => {
   // here you should get the books from the database
   // dummy catalog
   const isbns = [
@@ -37,7 +35,6 @@ export const getServerSideProps: GetServerSideProps<{
       const res = (await (
         await fetch(
           `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`
-          // `http://openlibrary.org/api/volumes/brief/isbn/${isbn}.json`
         )
       ).json()) as BookResponse;
 
@@ -50,6 +47,7 @@ export const getServerSideProps: GetServerSideProps<{
       return res[key as keyof typeof res];
     })
   );
+
   return { props: { books } };
 };
 
