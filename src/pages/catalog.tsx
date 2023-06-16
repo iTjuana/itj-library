@@ -9,6 +9,7 @@ const isObjectEmpty = (object: object) => {
   return Object.keys(object).length === 0 && object.constructor === Object;
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export const getServerSideProps: GetServerSideProps<BooksProps> = async () => {
   // here you should get the books from the database
