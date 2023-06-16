@@ -18,6 +18,7 @@ The following is a set of guidelines for contributing to ITJ Library project, wh
 [Styleguides](#styleguides)
 
 - [Git Commit Messages](#git-commit-messages)
+- [Git Branch Naming Convention](#git-branch-naming-convention)
 - [JavaScript Styleguide](#javaScript-styleguide)
 - [Tests Styleguide](#tests-styleguide)
 - [Documentation Styleguide](#documentation-styleguide)
@@ -173,6 +174,24 @@ While the prerequisites above must be satisfied prior to having your pull reques
 | Other                      | [Be creative](http://www.emoji-cheat-sheet.com/)          |
 
 See also [gitmoji](https://gitmoji.carloscuesta.me/).
+
+### Git Branch Naming Convention
+
+Git branches can be classified into the following branches:
+
+- Bug Fix: Fixes a bug
+- Hot Fix: Applies only after the defect is live
+- Feature Branch: Implements a new feature
+- Experimental Branch: Tries out new things that may not be on release
+- WIP branch: Work in progress
+- Release: Support preparationof a new production release
+
+Naming Conventions:
+
+- Start branch name with group word
+- Use unique issue id on branch names
+- Short descriptive name
+- Use hyphen as separators
 
 ### JavaScript Styleguide
 

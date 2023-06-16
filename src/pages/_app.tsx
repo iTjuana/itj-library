@@ -7,6 +7,10 @@ import "~/styles/globals.css";
 // fontawesome icon config for css working properly - https://fontawesome.com/docs/web/use-with/react/use-with
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+// tRPC setup from - https://trpc.io/docs/client/nextjs/setup
+import { trpc } from "utils/trpc";
+import Layout from "~/components/layout";
+
 config.autoAddCss = false;
 
 const MyApp: AppType<{ session: Session | null }> = ({
@@ -15,9 +19,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <Layout
+        title="iTj Library"
+        description="iTj Library - Borrow and Donate Books"
+      >
+        <Component {...pageProps} />
+      </Layout>
     </SessionProvider>
   );
 };
 
-export default MyApp;
+export default trpc.withTRPC(MyApp);
