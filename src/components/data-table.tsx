@@ -10,7 +10,7 @@ interface TableProps {
   rows: Row[];
 }
 
-export const Table: React.FunctionComponent<TableProps> = ({
+export const DataTable: React.FunctionComponent<TableProps> = ({
   id,
   header,
   rows,
@@ -27,6 +27,7 @@ export const Table: React.FunctionComponent<TableProps> = ({
       <table id={id} className="w-full font-normal text-[#556581]">
         <thead>
           <tr className="text-black">
+            <th className="font-normal">select</th>
             {tableData.header.map((title) => (
               <th key={title} className="font-normal">
                 {title}
@@ -37,6 +38,12 @@ export const Table: React.FunctionComponent<TableProps> = ({
         <tbody>
           {tableData.rows.map((row, index) => (
             <tr key={index}>
+              <input
+                type="checkbox"
+                id="scales"
+                name="scales"
+                className="h-5 w-5 accent-[#049281]"
+              ></input>
               {row.data.map((data) => (
                 <td key={data}>{data}</td>
               ))}
