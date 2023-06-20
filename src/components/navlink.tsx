@@ -3,16 +3,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type Props = {
-  className?: string;
   href: string;
   children: string;
 };
 
-const NavLink: React.FunctionComponent<Props> = ({
-  className,
-  href,
-  children,
-}) => {
+const NavLink: React.FunctionComponent<Props> = ({ href, children }) => {
   const pathname = usePathname();
   return (
     <Link
