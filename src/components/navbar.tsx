@@ -13,7 +13,9 @@ const Navbar = () => {
     <>
       <nav className="justify-content group flex flex-col items-start gap-4  sm:flex-row sm:gap-16">
         {pages.map((page) => (
-          <NavLink href={page.href}>{page.name}</NavLink>
+          <NavLink href={page.href} key={page.name}>
+            {page.name}
+          </NavLink>
         ))}
       </nav>
     </>
