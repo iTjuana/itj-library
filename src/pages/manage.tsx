@@ -1,7 +1,5 @@
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { Button } from "~/components/button";
-import { DropdownMenu, type Option } from "~/components/dropdown";
-import { Input } from "~/components/input";
-import { Table, type Row } from "~/components/table";
 
 type Stat = { name: string; value: number; color: string };
 
@@ -14,32 +12,69 @@ interface DashboardProps {
 export const getServerSideProps: GetServerSideProps<any> = async () => {
   // here you should get the books from the database
   // dummy stats
-  const stats = (await Promise.resolve([
+  const stats = await Promise.resolve([
     { name: "Active Users", value: 256, color: "#088484" },
     { name: "Total Books", value: 128, color: "#4DBCA1" },
     { name: "Available Books", value: 64, color: "#FFAE26" },
     { name: "Borrowed Books", value: 64, color: "#F45758" },
-  ])) as Stat[];
+  ]);
 
   return { props: { stats } };
 };
 
 const Manage = ({ stats }: DashboardProps) => {
-  const options = [
-    { text: "ID", value: "ID" },
-    { text: "Title", value: "Title" },
-    { text: "Donor", value: "Donor" },
-  ] as Option[];
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 70 },
+    { field: "title", headerName: "Title", width: 170 },
+    { field: "status", headerName: "Status", width: 90 },
+    { field: "format", headerName: "Format", width: 90 },
+    { field: "language", headerName: "Language", width: 90 },
+  ];
 
-  const headers = ["ID", "Title", "Status", "Format", "Language"];
   const rows = [
-    { data: ["001", "book", "borrowed", "paperback", "english"] },
-    { data: ["002", "book", "borrowed", "paperback", "english"] },
-    { data: ["003", "book", "borrowed", "paperback", "english"] },
-    { data: ["004", "book", "borrowed", "paperback", "english"] },
-    { data: ["005", "book", "borrowed", "paperback", "english"] },
-    { data: ["006", "book", "borrowed", "paperback", "english"] },
-  ] as Row[];
+    {
+      id: "001",
+      title: "book",
+      status: "borrowed",
+      format: "paperback",
+      language: "english",
+    },
+    {
+      id: "002",
+      title: "book",
+      status: "borrowed",
+      format: "paperback",
+      language: "english",
+    },
+    {
+      id: "003",
+      title: "book",
+      status: "borrowed",
+      format: "paperback",
+      language: "english",
+    },
+    {
+      id: "004",
+      title: "book",
+      status: "borrowed",
+      format: "paperback",
+      language: "english",
+    },
+    {
+      id: "005",
+      title: "book",
+      status: "borrowed",
+      format: "paperback",
+      language: "english",
+    },
+    {
+      id: "006",
+      title: "book",
+      status: "borrowed",
+      format: "paperback",
+      language: "english",
+    },
+  ];
 
   return (
     <>
@@ -66,20 +101,23 @@ const Manage = ({ stats }: DashboardProps) => {
           <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">Inventory</h3>
             <div className="flex gap-2.5 px-8">
-              <p>Search by:</p>
-              <DropdownMenu options={options} placeholder="ID, Title..." />
-              <Input
-                id="filter-id"
-                name="filter"
-                placeholder="Title, Author or Keyword..."
-              />
               <Button onClick={() => console.log("edit")}>Edit</Button>
               <Button onClick={() => console.log("delete")} isSecondary={true}>
                 Delete
               </Button>
             </div>
             {/* Data Table */}
-            <Table header={headers} rows={rows} />
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
+              }}
+              pageSizeOptions={[5, 10]}
+              checkboxSelection
+            />
           </div>
         </section>
       </main>

@@ -1,5 +1,14 @@
 import { Button } from "~/components/button";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import {
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "@mui/material";
 
 type User = { name: string; company: string; email: string; phone: string };
 type BookActivity = {
@@ -7,61 +16,7 @@ type BookActivity = {
   title: string;
   dueDate: string;
   status: string;
-};
-interface UserActivity {
-  activity: BookActivity[];
-}
-
-type Row = {
-  data: string[];
-};
-
-interface TableProps {
-  id?: string;
-  header: string[];
-  rows: Row[];
-}
-
-const Table: React.FunctionComponent<TableProps> = ({ id, header, rows }) => {
-  return (
-    <>
-      <table id={id} className="w-full font-normal text-[#556581]">
-        <thead>
-          <tr className="text-black">
-            {header.map((title) => (
-              <th key={title} className="font-normal">
-                {title}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              {row.data.map((data, index) =>
-                index !== 4 ? (
-                  <td key={data}>{data}</td>
-                ) : (
-                  <td key={data}>
-                    <Button
-                      onClick={() =>
-                        console.log(
-                          "This should open a modal to change user info"
-                        )
-                      }
-                      isSecondary={data === "See Book"}
-                    >
-                      {data}
-                    </Button>
-                  </td>
-                )
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
+  action: string;
 };
 
 const Manage = () => {
@@ -72,15 +27,50 @@ const Manage = () => {
     phone: "+52 6641234567",
   };
 
-  const headers = ["ID", "Title", "Due Date", "Status", "Action"];
   const rows = [
-    { data: ["001", "book", "7 June 2023", "Borrowed", "Return"] },
-    { data: ["002", "book", "7 June 2023", "Returned", "See Book"] },
-    { data: ["003", "book", "7 June 2023", "Borrowed", "Return"] },
-    { data: ["004", "book", "7 June 2023", "Borrowed", "Return"] },
-    { data: ["005", "book", "7 June 2023", "Borrowed", "Return"] },
-    { data: ["006", "book", "7 June 2023", "Borrowed", "Return"] },
-  ] as Row[];
+    {
+      id: "001",
+      title: "book",
+      dueDate: "7 June 2023",
+      status: "Borrowed",
+      action: "Return",
+    },
+    {
+      id: "001",
+      title: "book",
+      dueDate: "7 June 2023",
+      status: "Returned",
+      action: "See Book",
+    },
+    {
+      id: "001",
+      title: "book",
+      dueDate: "7 June 2023",
+      status: "Borrowed",
+      action: "Return",
+    },
+    {
+      id: "001",
+      title: "book",
+      dueDate: "7 June 2023",
+      status: "Borrowed",
+      action: "Return",
+    },
+    {
+      id: "001",
+      title: "book",
+      dueDate: "7 June 2023",
+      status: "Borrowed",
+      action: "Return",
+    },
+    {
+      id: "001",
+      title: "book",
+      dueDate: "7 June 2023",
+      status: "Borrowed",
+      action: "Return",
+    },
+  ] as BookActivity[];
 
   return (
     <>
@@ -119,9 +109,37 @@ const Manage = () => {
             Edit general information
           </Button>
         </div>
-        <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] sm:w-1/3">
+        <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] md:w-3/5">
           <h3 className="text-xl font-semibold">Activity</h3>
-          <Table header={headers} rows={rows}></Table>
+          <TableContainer component={Paper}>
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell align="right">Title</TableCell>
+                  <TableCell align="right">Due Date</TableCell>
+                  <TableCell align="right">Status</TableCell>
+                  <TableCell align="right">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.id}
+                    </TableCell>
+                    <TableCell align="right">{row.title}</TableCell>
+                    <TableCell align="right">{row.dueDate}</TableCell>
+                    <TableCell align="right">{row.status}</TableCell>
+                    <TableCell align="right">{row.action}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </main>
     </>
