@@ -42,7 +42,8 @@ const Catalog = () => {
           return res[key as keyof typeof res];
         })
       );
-      console.log(values);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       setBooks(values);
     };
 
