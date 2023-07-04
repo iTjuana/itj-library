@@ -1,5 +1,3 @@
-import { Button } from "~/components/button";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import {
   TableContainer,
   Paper,
@@ -8,7 +6,12 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Button,
+  Modal,
+  Box,
+  Typography,
 } from "@mui/material";
+import { useState } from "react";
 
 type User = { name: string; company: string; email: string; phone: string };
 type BookActivity = {
@@ -17,6 +20,18 @@ type BookActivity = {
   dueDate: string;
   status: string;
   action: string;
+};
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 3,
 };
 
 const Manage = () => {
@@ -72,6 +87,8 @@ const Manage = () => {
     },
   ] as BookActivity[];
 
+  const [open, setOpen] = useState(false);
+
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
@@ -100,14 +117,24 @@ const Manage = () => {
               <p className="font-light">{user.phone}</p>
             </div>
           </section>
-          <Button
-            icon={faPenToSquare}
-            onClick={() =>
-              console.log("This should open a modal to change user info")
-            }
-          >
+          <Button variant="text" onClick={() => setOpen(true)}>
             Edit general information
           </Button>
+          <Modal
+            open={open}
+            onClose={() => setOpen(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                TODO:
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                Add edit profile functionality
+              </Typography>
+            </Box>
+          </Modal>
         </div>
         <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] md:w-3/5">
           <h3 className="text-xl font-semibold">Activity</h3>
