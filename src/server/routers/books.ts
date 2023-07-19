@@ -2,23 +2,32 @@ import { z } from "zod";
 import { procedure, router } from "../trpc";
 import { type Inventary, PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 const bookSchema = z.object({
-  id: z.string(),
-  name: z.string(),
+  idISBN: z.string(),
+  isbn: z.string(),
+  title: z.string(),
+  subtitle: z.string(),
   description: z.string(),
-  authors: z.string(),
   language: z.string(),
+  authors: z.string(),
+  subjects: z.string(),
+  publishDates: z.string(),
+  publishers: z.string(),
+  number_of_pages: z.string(),
+  image: z.string(),
+  // inventary - TBC
 });
 
 export const booksRouter = router({
   // Get Books
   getBooks: procedure
     .input(bookSchema)
-    .query(({ ctx }) => {
+    .query(async ({ctx}) => {
+      // const books = await ctx.prisma.inventary.findMany();
       // Logic to retrieve books - [Q] how to connect to db?
-      return ctx.prisma.Inventary.findMany();
+      return [{text: 'yay'}];
     }),
   
   // Add Books
