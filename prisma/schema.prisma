@@ -11,15 +11,6 @@ datasource db {
   relationMode = "prisma"
 }
 
-//Luego borrar esto
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    nameAt String?
-}
-
-
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -37,6 +28,7 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -45,6 +37,7 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    @@index([userId])
 }
 
 model User {
@@ -68,9 +61,26 @@ model VerificationToken {
 
 //Tablas itj 
 
+model Book {
+    idISBN       String   @id @default(cuid())
+    isbn         String   
+    title        String?
+    subtitle     String?   
+    description  String?   
+    language     String?
+    authors      String?
+    subjects     String?
+    publishDates String?
+    publishers     String?
+    number_of_pages     String?
+    image        String?
+    inventary    Inventary[]
+}
+
 model Inventary {
     id           String   @id @default(cuid())
-    isbn         String   //@index
+    book         Book?     @relation(fields: [bookId], references: [idISBN], onDelete: Cascade)
+    bookId       String?
     status       String   //enum
     format       String   //enum
     condition    String   //enum
@@ -78,6 +88,7 @@ model Inventary {
     dateAdded    DateTime @default(now())
     lastUpdate   DateTime @updatedAt
     transaction  Transaction[]
+    @@index([bookId])
 }
 
 model Transaction {
@@ -88,5 +99,7 @@ model Transaction {
   borrowedDate DateTime  
   dueDate DateTime 
   @@id([userId, inventaryId])
+  @@index([userId])
+  @@index([inventaryId])
 }
 
