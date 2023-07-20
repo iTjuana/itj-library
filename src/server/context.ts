@@ -1,15 +1,14 @@
-import { type inferAsyncReturnType } from "@trpc/server";
-import { type NextApiRequest , type NextApiResponse } from "next";
+import { PrismaClient } from "@prisma/client";
+import { Context } from '@trpc/server';
 
-// eslint-disable-next-line @typescript-eslint/require-await
-export async function createContext({
-    req,
-    res,
-}: {
-    req: NextApiRequest;
-    res: NextApiResponse;
-}) {
-    return { req, res };
+export interface CustomContext extends Context{
+    prisma: PrismaClient;
 }
 
-export type Context = inferAsyncReturnType<typeof createContext>;
+export function createContext() {
+    const prisma = new PrismaClient();
+
+    return {
+        prisma,
+    };
+}

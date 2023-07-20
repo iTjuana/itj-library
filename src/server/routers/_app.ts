@@ -1,5 +1,5 @@
-import { mergeRouters } from "../trpc";
 import { booksRouter } from "./books";
+import { mergeRouters } from  "../trpc";
 
 const appRouter = mergeRouters(booksRouter);
 

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { procedure, router } from "../trpc";
-import { type Inventary, PrismaClient } from "@prisma/client";
+// import { Context } from "../context";
+// import { PrismaClient } from "@prisma/client";
 
 // const prisma = new PrismaClient();
 
@@ -24,19 +25,21 @@ export const booksRouter = router({
   // Get Books
   getBooks: procedure
     .input(bookSchema)
-    .query(async ({ctx}) => {
-      // const books = await ctx.prisma.inventary.findMany();
+    .query(({ctx}) => {
       // Logic to retrieve books - [Q] how to connect to db?
+      const books = ctx;
+      console.log(books);
+      
       return [{text: 'yay'}];
     }),
   
   // Add Books
-  addBook: procedure
-    .input(bookSchema)
-    .mutation(({ input, ctx }) =>{
+  // addBook: procedure
+  //   .input(bookSchema)
+  //   .mutation(({ input, ctx }) =>{
       
-      // Logic to add books
-    }),
+  //     // Logic to add books
+  //   }),
   
   // findBookById
   // updateBook
