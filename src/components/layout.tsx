@@ -29,7 +29,9 @@ const Layout: React.FunctionComponent<Props> = ({
       </Head>
       <div className="flex h-screen w-full flex-col">
         <header className="flex w-full items-center justify-between bg-white px-8 py-6 drop-shadow-lg sm:px-32">
-          <Image src="/itj_library.svg" alt="itj" width="100" height="32" />
+          <Link href="/">
+            <Image src="/itj_library.svg" alt="itj" width="100" height="32" />
+          </Link>
           <Navbar />
         </header>
 
