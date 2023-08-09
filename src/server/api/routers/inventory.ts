@@ -28,6 +28,11 @@ export const inventoryRouter = createTRPCRouter({
         greeting: `hello ${opts.input.text}`,
       };
     }),
+  private: privateProcedure.query(() => {
+    return {
+      session: "Session",
+    };
+  }),
   inventory: publicProcedure
     .input(
       z.object({
@@ -47,7 +52,7 @@ export const inventoryRouter = createTRPCRouter({
         take: limit,
         where: {
           status: availability?.toString(),
-          format: format?.toString(), // need to change to number
+          format: format?.toString(), // TODO: need to change to number
         },
         skip: (page - 1) * limit,
       });
