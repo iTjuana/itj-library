@@ -1,8 +1,8 @@
 import { type NextPage } from "next";
-import { trpc } from "utils/trpc";
+import { api } from "utils/trpc";
 
 const Home: NextPage = () => {
-  const hello = trpc.hello.useQuery({ text: "client" });
+  const hello = api.inventory.hello.useQuery({ text: "client" });
   if (!hello.data) console.log("waiting");
   else console.log(`got: ${hello.data.greeting}`);
   return (
