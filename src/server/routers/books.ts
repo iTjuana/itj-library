@@ -1,10 +1,8 @@
 import { z } from "zod";
 import { procedure, router } from "../trpc";
-// import { Context } from "../context";
-// import { PrismaClient } from "@prisma/client";
+import { resolve } from "path";
 
-// const prisma = new PrismaClient();
-
+const testSchema = z.object({ res: z.string()});
 const bookSchema = z.object({
   idISBN: z.string(),
   isbn: z.string(),
@@ -24,27 +22,25 @@ const bookSchema = z.object({
 export const booksRouter = router({
   // Get Books
   getBooks: procedure
-    .input(bookSchema)
-    .query(({ctx}) => {
-      // Logic to retrieve books - [Q] how to connect to db?
-      const books = ctx;
-      console.log(books);
-      
-      return [{text: 'yay'}];
+    .input(testSchema)
+    .query(async ({ctx}) => {
+      // Logic to retrieve books
+      return await ctx.prisma.book.findMany();
     }),
   
   // Add Books
-  // addBook: procedure
-  //   .input(bookSchema)
-  //   .mutation(({ input, ctx }) =>{
+  addBook: procedure
+    .input(bookSchema)
+    .mutation(({ input, ctx }) =>{
       
-  //     // Logic to add books
-  //   }),
-  
+      // Logic to add books
+    }),
+
   // findBookById
   // updateBook
   // removeBook
-});
+    });
+  
 
 // export type definition of API
 export type booksRouter = typeof booksRouter;
