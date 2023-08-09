@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { procedure, router } from "../trpc";
-import { resolve } from "path";
 
 const testSchema = z.object({ res: z.string()});
 const bookSchema = z.object({
@@ -22,7 +21,7 @@ const bookSchema = z.object({
 export const booksRouter = router({
   // Get Books
   getBooks: procedure
-    .input(testSchema)
+    .input(bookSchema)
     .query(async ({ctx}) => {
       // Logic to retrieve books
       return await ctx.prisma.book.findMany();
@@ -31,15 +30,29 @@ export const booksRouter = router({
   // Add Books
   addBook: procedure
     .input(bookSchema)
-    .mutation(({ input, ctx }) =>{
-      
+    .mutation(async ({ input, ctx }) =>{
       // Logic to add books
+      return await ctx.prisma.book.create({data: input});
     }),
 
-  // findBookById
-  // updateBook
-  // removeBook
-    });
+  // Find Book
+  findBookById: procedure
+    .input(bookSchema)
+    .query(),
+
+  // Update Book
+  updateBook: procedure
+    .input(bookSchema),
+    .mutation(),
+  
+  // Remove Book
+  removeBook: procedure
+    .input(bookSchema),
+    .mutation(),
+
+
+  // End router
+  });
   
 
 // export type definition of API
