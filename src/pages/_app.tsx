@@ -9,7 +9,7 @@ import "~/styles/globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 // tRPC setup from - https://trpc.io/docs/client/nextjs/setup
-import { trpc } from "utils/trpc";
+import { api } from "utils/trpc";
 import Layout from "~/components/layout";
 
 config.autoAddCss = false;
@@ -31,4 +31,4 @@ const MyApp: AppType<{ session: Session | null }> = ({
   );
 };
 
-export default trpc.withTRPC(MyApp);
+export default api.withTRPC(MyApp);
