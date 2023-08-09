@@ -1,7 +1,9 @@
 import { booksRouter } from "./books";
-import { mergeRouters } from  "../trpc";
+import { router } from  "../trpc";
 
-const appRouter = mergeRouters(booksRouter);
+const appRouter = router({
+    books: booksRouter,
+});
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
