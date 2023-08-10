@@ -36,7 +36,6 @@ export const booksRouter = createTRPCRouter({
   // Get all books
   getBooks: publicProcedure
   .query(async () => {
-    console.log( await prisma.book.findMany());     // TODO: Remove line
     return await prisma.book.findMany();
   }),
 
@@ -50,14 +49,11 @@ export const booksRouter = createTRPCRouter({
     .query( async( opts ) => {
       // Logic to find book by id
       const { input } = opts;
-      const findBook = await prisma.book.findUnique({
+      return await prisma.book.findUnique({
         where: {
           idISBN: input.id,
         }
       })
-      console.log("yayyy");                         // TODO: Remove line
-      console.log(findBook);                        // TODO: Remove line
-
     }),
 
   // Add Book
@@ -66,10 +62,7 @@ export const booksRouter = createTRPCRouter({
   .mutation(async ( opts ) => {
     // Logic to add books
     const { input } = opts;
-    console.log('Book added');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    console.log("Show Input");
-    console.log(input);
+    console.log('Book added');                       // TODO: Remove line
     // return await prisma.book.create({ data: input});
   }),
   
