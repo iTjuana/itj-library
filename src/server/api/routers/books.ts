@@ -4,12 +4,11 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { type Book, PrismaClient } from "@prisma/client";
+import { type Book, PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 const bookInput = z.object({
-  idISBN: z.string().optional(),
   isbn: z.string(),
   title: z.string(),
   subtitle: z.string(),
@@ -21,8 +20,7 @@ const bookInput = z.object({
   publishers: z.string(),
   number_of_pages: z.string(),
   image: z.string(),
-  inventary: z.string().optional(),
-});
+}).required();
 
 async function getBooksTable(): Promise<Book[] | undefined> {
   try {
@@ -36,15 +34,16 @@ export const booksRouter = createTRPCRouter({
   // Get all books
   getBooks: publicProcedure
   .query(async () => {
+    // Logic to get all books
     return await prisma.book.findMany();
   }),
 
-  // Find Book
+  // Find book by id
   findBookById: publicProcedure
     .input(
       z.object({
         id: z.string(),
-      })
+      }).required()
     )
     .query( async( opts ) => {
       // Logic to find book by id
@@ -60,12 +59,31 @@ export const booksRouter = createTRPCRouter({
   addBook: publicProcedure // TODO: Change to privateProcedure?
   .input(bookInput)
   .mutation(async ( opts ) => {
-    // Logic to add books
+    // Logic to add book
     const { input } = opts;
-    console.log('Book added');                       // TODO: Remove line
-    // return await prisma.book.create({ data: input});
+    return await prisma.book.create({ data: input });
   }),
   
+  // Update Book
+  // updateBook: publicProcedure // TODO: Change to privateProcedure
+  //   .input(bookInput)
+  //   .mutation(async( opts ) => {
+  //     // Logic to update book
+  //     const { input } = opts;
+  //     return await prisma.book.update({
+  //       where: {
+  //         isbn: input.isbn,
+
+  //       },
+  //       data: input,
+  //     })
+  //   }),
+  
+  // Remove Book
+  // removeBook: publicProcedure // TODO: Change to privateProcedure
+  //   .input(bookInput)
+  //   .mutation(),
+
   // TODO: Confirm if needed
   private: privateProcedure.query(() => {
     return {
@@ -73,20 +91,8 @@ export const booksRouter = createTRPCRouter({
     };
   }),
 
-  // Update Book
-  // updateBook: publicProcedure // TODO: Change to privateProcedure
-  //   .input(bookInput),
-  //   .mutation(),
-  
-  // Remove Book
-  // removeBook: publicProcedure // TODO: Change to privateProcedure
-  //   .input(bookInput),
-  //   .mutation(),
-
-
   // End router
   });
   
-
 // export type definition of API
 export type BooksRouter = typeof booksRouter;
