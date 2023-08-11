@@ -65,24 +65,40 @@ export const booksRouter = createTRPCRouter({
   }),
   
   // Update Book
-  // updateBook: publicProcedure // TODO: Change to privateProcedure
-  //   .input(bookInput)
-  //   .mutation(async( opts ) => {
-  //     // Logic to update book
-  //     const { input } = opts;
-  //     return await prisma.book.update({
-  //       where: {
-  //         isbn: input.isbn,
-
-  //       },
-  //       data: input,
-  //     })
-  //   }),
+  updateBook: publicProcedure // TODO: Change to privateProcedure?
+    .input(
+      z.object({
+        idISBN: z.string(),
+        bookInfo: bookInput,
+      })
+    )
+    .mutation(async( opts ) => {
+      // Logic to update book
+      const { input } = opts;
+      return await prisma.book.update({
+        where: {
+          idISBN: input.idISBN,
+        },
+        data: input.bookInfo,
+      })
+    }),
   
   // Remove Book
-  // removeBook: publicProcedure // TODO: Change to privateProcedure
-  //   .input(bookInput)
-  //   .mutation(),
+  removeBook: publicProcedure // TODO: Change to privateProcedure?
+    .input(
+      z.object({
+        idISBN: z.string(),
+      }).required()
+    )
+    .mutation(async ( opts ) => {
+      // Logic to remove book
+      const { input } = opts;
+      return await prisma.book.delete({
+        where: {
+          idISBN: input.idISBN,
+        },
+      })
+    }),
 
   // TODO: Confirm if needed
   private: privateProcedure.query(() => {

@@ -2,12 +2,8 @@ import { type NextPage } from "next";
 import { api } from "utils/trpc";
 
 const Home: NextPage = () => {
+  
   const hello = api.inventory.hello.useQuery({ text: "client" });
-
-
-  // Start Test Books API
-  const testBooks = api.books.getBooks.useQuery();
-  // End Test Books API
 
   if (!hello.data) console.log("waiting");
   else console.log(`got: ${hello.data.greeting}`);
