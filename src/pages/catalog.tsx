@@ -122,9 +122,8 @@ const Catalog = () => {
 
   const count: number | undefined = api.inventory.count.useQuery().data;
   const inventory = api.inventory.inventory.useQuery(filters).data ?? [];
-  // TODO: change Inventory bookId to be required
   const inventoryBooks = api.books.findBooksById.useQuery(
-    inventory?.map((book: Inventary) => book.bookId ?? "")
+    inventory?.map((book: Inventary) => book.bookId)
   );
   console.log("inventory", inventory);
   console.log("inventoryBooks", inventoryBooks);
