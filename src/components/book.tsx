@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { type Book } from "@prisma/client";
 
-export type Book = {
+export type BookApi = {
   publishDates: string[];
   title: string;
   key: string;
@@ -13,7 +14,7 @@ export type Book = {
   cover: { small: string; medium: string; large: string };
 };
 
-export type BookISBN = {
+export type BookApiIsbn = {
   isbns: string[];
   publishDates: string[];
   olids: string[];
@@ -31,7 +32,7 @@ export type BookISBN = {
 };
 
 export interface BookResponse {
-  isbn: { book: Book };
+  isbn: { book: BookApi };
 }
 
 export interface BookProps {
@@ -39,7 +40,7 @@ export interface BookProps {
 }
 
 export interface BooksProps {
-  books: (Book | null)[];
+  books: (BookApi | null)[];
 }
 
 export const SimpleBook: React.FunctionComponent<BookProps> = ({ book }) => {
@@ -47,16 +48,21 @@ export const SimpleBook: React.FunctionComponent<BookProps> = ({ book }) => {
     return <></>;
   }
   return (
-    <Link href={book.key} className="flex w-1/2 flex-col items-center sm:w-1/5">
+    <Link
+      href={`/${book.isbn}`}
+      className="flex w-1/2 flex-col items-center sm:w-1/5"
+    >
       <Image
-        src={book.cover?.large ?? "/cover-unavailable.jpg"}
+        src={book.image ?? "/cover-unavailable.jpg"}
         width={300}
         height={300}
         alt="cover"
       />
-      <p>{book.title}</p>
+      <p>{book.title ?? "Title is missing"}</p>
       <hr className="w-2/3" />
-      <p className="text-[#556581]">{book.authors[0].name}</p>
+      <p className="text-[#556581]" title={book.authors ?? ""}>
+        {book.authors ?? "Author(s) missing"}
+      </p>
     </Link>
   );
 };
