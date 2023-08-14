@@ -1,4 +1,4 @@
-import { type BookResponse, SimpleBook, type Book } from "~/components/book";
+import { type BookResponse, SimpleBook } from "~/components/book";
 import { api } from "utils/trpc";
 import {
   CircularProgress,
@@ -10,6 +10,7 @@ import {
 import { type ReactElement, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
+import { type Book, type Inventary } from "@prisma/client";
 
 // recommended to use instead of enums
 // by https://www.youtube.com/watch?v=jjMbPt_H3RQ
@@ -19,35 +20,25 @@ const AVAILABILITY = {
   Unavailable: 2,
 } as const;
 
+const FORMAT = {
+  Any: 0,
+  Hardcover: 1,
+  Paperback: 2,
+  Ebook: 3,
+} as const;
+
+const LANGUAGE = {
+  Any: 0,
+  English: 1,
+  Spanish: 2,
+  Other: 3,
+} as const;
+
 type ObjectValues<T> = T[keyof T];
-
-const enum Format {
-  Any,
-  Hardcover,
-  Paperback,
-}
-
-const enum Language {
-  Any,
-  English,
-  Spanish,
-}
 
 const isObjectEmpty = (object: object) => {
   return Object.keys(object).length === 0 && object.constructor === Object;
 };
-
-interface BookDB {
-  id: string;
-  isbn: string;
-  status: string;
-  format: string;
-  condition: string;
-  bookOwner: string;
-  dateAdded: Date;
-  lastUpdate: Date;
-  transaction: unknown;
-}
 
 interface Filters {
   limit?: number;
@@ -98,6 +89,21 @@ const FilterSelect = ({
   );
 };
 
+const getBookFromExternalAPI = async (book: Book) => {
+  const res = (await (
+    await fetch(
+      `https://openlibrary.org/api/books?bibkeys=ISBN:${book.isbn}&jscmd=data&format=json`
+    )
+  ).json()) as BookResponse;
+
+  if (isObjectEmpty(res) || (Array.isArray(res) && !res.length)) return null;
+
+  const key: string = Object.keys(res)[0] || "";
+
+  // Got lint fix from: https://stackoverflow.com/questions/57086672/element-implicitly-has-an-any-type-because-expression-of-type-string-cant-b
+  return res[key as keyof typeof res];
+};
+
 const Catalog = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -109,37 +115,22 @@ const Catalog = () => {
   );
   const [format, setFormat] = useState<number | undefined>(undefined);
   const [language, setLanguage] = useState<number | undefined>(undefined);
-  const [books, setBooks] = useState<(Book | null)[] | null>(null);
   const [filters, setFilters] = useState<Filters>({
     limit,
     page,
   });
+
   const count: number | undefined = api.inventory.count.useQuery().data;
-  const inventory = api.inventory.inventory.useQuery(filters).data;
+  const inventory = api.inventory.inventory.useQuery(filters).data ?? [];
+  // TODO: change Inventory bookId to be required
+  const inventoryBooks = api.books.findBooksById.useQuery(
+    inventory?.map((book: Inventary) => book.bookId ?? "")
+  );
+  console.log("inventory", inventory);
+  console.log("inventoryBooks", inventoryBooks);
 
   useEffect(() => {
-    const fetchBooks = async (books: BookDB[]) => {
-      const values: ({ book: Book } | null)[] = await Promise.all(
-        books.map(async (book: BookDB) => {
-          const res = (await (
-            await fetch(
-              `https://openlibrary.org/api/books?bibkeys=ISBN:${book.isbn}&jscmd=data&format=json`
-            )
-          ).json()) as BookResponse;
-
-          if (isObjectEmpty(res) || (Array.isArray(res) && !res.length))
-            return null;
-
-          const key: string = Object.keys(res)[0] || "";
-
-          // Got lint fix from: https://stackoverflow.com/questions/57086672/element-implicitly-has-an-any-type-because-expression-of-type-string-cant-b
-          return res[key as keyof typeof res];
-        })
-      );
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      setBooks(values);
-    };
+    console.log("useEffect...");
 
     if (searchParams.has("page"))
       setPage(parseInt(searchParams.get("page") as unknown as string));
@@ -151,17 +142,12 @@ const Catalog = () => {
       language,
       page,
     });
-    console.log("useEffect...");
+
     console.log(
-      `\tpage = ${page}\n\tlimit = ${limit}\n\tfilter = ${JSON.stringify(
+      `Debug Filters @ catalog\tpage = ${page}\n\tlimit = ${limit}\n\tfilter = ${JSON.stringify(
         filters
       )}`
     );
-
-    if (inventory && !books)
-      fetchBooks(inventory as unknown as BookDB[]).catch(() =>
-        console.log("error when fetching books")
-      );
   }, [inventory, page]);
 
   const availabilityOptions: FilterItem[] = [
@@ -170,14 +156,14 @@ const Catalog = () => {
     { value: AVAILABILITY.Unavailable, name: "Unavailable" },
   ];
   const FormatOptions: FilterItem[] = [
-    { value: Format.Any, name: "All" },
-    { value: Format.Hardcover, name: "Hard-cover" },
-    { value: Format.Paperback, name: "Paperback" },
+    { value: FORMAT.Any, name: "All" },
+    { value: FORMAT.Hardcover, name: "Hard-cover" },
+    { value: FORMAT.Paperback, name: "Paperback" },
   ];
   const LanguageOptions: FilterItem[] = [
-    { value: Language.Any, name: "All" },
-    { value: Language.English, name: "English" },
-    { value: Language.Spanish, name: "Spanish" },
+    { value: LANGUAGE.Any, name: "All" },
+    { value: LANGUAGE.English, name: "English" },
+    { value: LANGUAGE.Spanish, name: "Spanish" },
   ];
 
   return (
@@ -206,15 +192,15 @@ const Catalog = () => {
           <Input placeholder="Search for a book..." />
         </div>
         <div className="flex flex-col items-center gap-5">
-          {!books ? (
+          {!inventoryBooks.isFetched ? (
             <CircularProgress />
-          ) : !books.length ? (
+          ) : !inventoryBooks.data?.length ? (
             <p>No books right now :c</p>
           ) : (
             <>
               <div className="flex flex-wrap justify-center gap-3 sm:w-5/6">
-                {books?.map((book) => (
-                  <SimpleBook book={book} key={book?.key} />
+                {inventoryBooks.data?.map((book) => (
+                  <SimpleBook book={book} key={book?.idISBN} />
                 ))}
               </div>
               <Pagination
@@ -224,7 +210,6 @@ const Catalog = () => {
                 onChange={(e, val) => {
                   console.log("val", val);
                   setPage(val);
-                  setBooks(null);
                   // router.push(`?page=${val}`, undefined, { shallow: true });
                 }}
               />

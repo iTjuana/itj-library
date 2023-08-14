@@ -80,8 +80,8 @@ model Inventary {
   bookOwner   String
   dateAdded   DateTime      @default(now())
   lastUpdate  DateTime      @updatedAt
-  bookId      String?
-  book        Book?         @relation(fields: [bookId], references: [idISBN], onDelete: Cascade)
+  bookId      String
+  book        Book          @relation(fields: [bookId], references: [idISBN], onDelete: Cascade)
   transaction Transaction[]
 
   @@index([bookId])
