@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "./navbar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faX } from "@fortawesome/free-solid-svg-icons";
 
 // todo: check if this is the best way - https://nextjs.org/docs/basic-features/layouts
 
@@ -17,6 +19,7 @@ const Layout: React.FunctionComponent<Props> = ({
   description,
   children,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <Head>
@@ -28,11 +31,24 @@ const Layout: React.FunctionComponent<Props> = ({
         <link rel="icon" href="/itj_logo_w.ico" />
       </Head>
       <div className="flex h-screen w-full flex-col">
-        <header className="flex w-full items-center justify-between bg-white px-8 py-6 drop-shadow-lg sm:px-32">
-          <Link href="/">
-            <Image src="/itj_library.svg" alt="itj" width="100" height="32" />
-          </Link>
-          <Navbar />
+        <header className="flex w-full flex-col items-center bg-white px-8 py-6 drop-shadow-lg sm:px-32 md:flex-row">
+          <div className="flex w-full items-center justify-between">
+            <Link href="/">
+              <Image src="/itj_library.svg" alt="itj" width="100" height="32" />
+            </Link>
+            <div
+              onClick={() => setIsOpen(!isOpen)}
+              className="h7 absolutei right-8 top-6 w-7 cursor-pointer  md:hidden"
+            >
+              {isOpen ? (
+                <FontAwesomeIcon icon={faX} />
+              ) : (
+                <FontAwesomeIcon icon={faBars} />
+              )}
+            </div>
+          </div>
+
+          <Navbar isOpen={isOpen} />
         </header>
 
         <div className="grow">{children}</div>

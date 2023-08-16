@@ -12,7 +12,9 @@ const NavLink: React.FunctionComponent<Props> = ({ href, children }) => {
   return (
     <Link
       href={href}
-      className={pathname === href ? "text-primary" : "primary-dark"}
+      className={`pt-1 text-lg ${
+        pathname === href ? "text-primary" : "primary-dark"
+      }`}
     >
       {children}
     </Link>
