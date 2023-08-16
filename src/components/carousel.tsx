@@ -55,11 +55,11 @@ export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
         {books?.map((book) => (
           <div
             className="!flex flex-col items-center justify-center"
-            key={book?.key}
+            key={book?.title}
           >
-            <Link href={book?.key ?? "/"}>
+            <Link href={book?.title ?? "/"}>
               <Image
-                src={book?.cover?.large ?? "/cover-unavailable.jpg"}
+                src={book.image ?? "/cover-unavailable.jpg"}
                 width={300}
                 height={300}
                 alt="cover"

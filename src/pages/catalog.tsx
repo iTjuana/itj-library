@@ -1,8 +1,41 @@
-import { type BookResponse, SimpleBook, type Book } from "~/components/book";
-import { trpc } from "utils/trpc";
-import { CircularProgress } from "@mui/material";
-import { useEffect, useState } from "react";
+import { type BookResponse, SimpleBook } from "~/components/book";
+import { api } from "utils/trpc";
+import {
+  CircularProgress,
+  Input,
+  MenuItem,
+  Pagination,
+  TextField,
+} from "@mui/material";
+import { type ReactElement, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
+import { type Book, type Inventary } from "@prisma/client";
 import { SimpleCarousel } from "~/components/carousel";
+
+// recommended to use instead of enums
+// by https://www.youtube.com/watch?v=jjMbPt_H3RQ
+const AVAILABILITY = {
+  Any: 0,
+  Available: 1,
+  Unavailable: 2,
+} as const;
+
+const FORMAT = {
+  Any: 0,
+  Hardcover: 1,
+  Paperback: 2,
+  Ebook: 3,
+} as const;
+
+const LANGUAGE = {
+  Any: 0,
+  English: 1,
+  Spanish: 2,
+  Other: 3,
+} as const;
+
+type ObjectValues<T> = T[keyof T];
 
 const isObjectEmpty = (object: object) => {
   return Object.keys(object).length === 0 && object.constructor === Object;
@@ -135,7 +168,7 @@ const Catalog = () => {
 
   return (
     <>
-      {books && <SimpleCarousel books={books} />}
+      <SimpleCarousel books={inventoryBooks.data} />
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
         <h1 className="text-4xl font-medium text-[#1C325F]">Catalog</h1>
         <div className="flex w-full justify-center gap-3">
