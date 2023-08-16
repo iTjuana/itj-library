@@ -1,13 +1,8 @@
 import Slider from "react-slick";
-import { Book, SimpleBook } from "./book";
 import Link from "next/link";
 import Image from "next/image";
 
 const settings = {
-  dots: true,
-  speed: 500,
-  slidesToShow: 3,
-  slidesToScroll: 1,
   responsive: [
     {
       breakpoint: 1024,
@@ -37,13 +32,26 @@ const settings = {
 };
 
 export interface CarouselProps {
-  books: (Book | null)[];
+  books: {
+    title: string;
+    image: string;
+  }[];
+  size?: "small" | "medium" | "large";
+  dots?: boolean;
+  speed?: number;
+  slidesToShow?: number;
+  slidesToScroll?: number;
+  infinite?: boolean;
 }
 
 export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
   props
 ) => {
-  const { books } = props;
+  const { books, size, dots, speed, slidesToShow, slidesToScroll, infinite } =
+    props;
+
+  const width = size === "small" ? 200 : size === "medium" ? 300 : 350;
+  const height = size === "small" ? 200 : size === "medium" ? 300 : 350;
 
   if (!books?.length) {
     return <></>;
@@ -51,7 +59,14 @@ export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
 
   return (
     <div>
-      <Slider {...settings}>
+      <Slider
+        {...settings}
+        dots={dots}
+        speed={speed}
+        slidesToShow={slidesToShow}
+        slidesToScroll={slidesToScroll}
+        infinite={infinite}
+      >
         {books?.map((book) => (
           <div
             className="!flex flex-col items-center justify-center"
@@ -60,8 +75,8 @@ export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
             <Link href={book?.title ?? "/"}>
               <Image
                 src={book.image ?? "/cover-unavailable.jpg"}
-                width={300}
-                height={300}
+                width={width}
+                height={height}
                 alt="cover"
               />
             </Link>
@@ -70,4 +85,13 @@ export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
       </Slider>
     </div>
   );
+};
+
+SimpleCarousel.defaultProps = {
+  size: "medium",
+  dots: true,
+  speed: 500,
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  infinite: true,
 };

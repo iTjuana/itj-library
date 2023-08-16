@@ -11,7 +11,6 @@ import { type ReactElement, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { type Book, type Inventary } from "@prisma/client";
-import { SimpleCarousel } from "~/components/carousel";
 
 // recommended to use instead of enums
 // by https://www.youtube.com/watch?v=jjMbPt_H3RQ
@@ -168,7 +167,6 @@ const Catalog = () => {
 
   return (
     <>
-      <SimpleCarousel books={inventoryBooks.data} />
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
         <h1 className="text-4xl font-medium text-[#1C325F]">Catalog</h1>
         <div className="flex w-full justify-center gap-3">
