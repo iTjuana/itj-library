@@ -37,17 +37,13 @@ export interface BookResponse {
 
 export interface BookProps {
   book: Book | null;
-  hideInfo?: boolean;
 }
 
 export interface BooksProps {
   books: (BookApi | null)[];
 }
 
-export const SimpleBook: React.FunctionComponent<BookProps> = ({
-  book,
-  hideInfo,
-}) => {
+export const SimpleBook: React.FunctionComponent<BookProps> = ({ book }) => {
   if (!book) {
     return <></>;
   }
@@ -62,15 +58,11 @@ export const SimpleBook: React.FunctionComponent<BookProps> = ({
         height={300}
         alt="cover"
       />
-      {!hideInfo && (
-        <>
-          <p>{book.title ?? "Title is missing"}</p>
-          <hr className="w-2/3" />
-          <p className="text-[#556581]" title={book.authors ?? ""}>
-            {book.authors ?? "Author(s) missing"}
-          </p>
-        </>
-      )}
+      <p>{book.title ?? "Title is missing"}</p>
+      <hr className="w-2/3" />
+      <p className="text-[#556581]" title={book.authors ?? ""}>
+        {book.authors ?? "Author(s) missing"}
+      </p>
     </Link>
   );
 };
