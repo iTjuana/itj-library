@@ -2,40 +2,15 @@ import { type NextPage } from "next";
 import { api } from "utils/trpc";
 
 const Home: NextPage = () => {
-
+  
   const hello = api.inventory.hello.useQuery({ text: "client" });
-  const getUser = api.users.findUserById.useQuery({ id: '1' })
-  const getUsers = api.users.getUsers.useQuery();
-  const mutation = api.users.addUser.useMutation();
-
-  const handleAddUser = () => {
-    const user = {
-      name: 'Kanye West',
-      email: 'kanye.west@dexcom.com',
-      image: 'goat.png',
-    };
-    mutation.mutate(user);
-  };
 
   if (!hello.data) console.log("waiting");
   else console.log(`got: ${hello.data.greeting}`);
-  console.log(`There are ${getUsers.data?.length} users, ${getUsers.data?.map(obj => obj.name)}`);
-  console.log(`got: ${getUser.data?.name} | ${getUser.data?.email}`);
-
-
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
         <h1 className="text-4xl font-medium text-[#1C325F]">Books</h1>
-
-
-        {/* Test button */}
-        <button onClick={handleAddUser} disabled={mutation.isLoading} className="bg-[#1C325F] text-white rounded px-4 py-2">
-          Test addUser
-        </button>
-        {mutation.error && <p>Something went wrong! {mutation.error.message}</p>}
-
-
         {/* Carrousel */}
         {/* Instructions */}
         <section className="flex max-w-3xl flex-col items-center gap-4">
