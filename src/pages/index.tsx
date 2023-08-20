@@ -17,10 +17,13 @@ const Home: NextPage = () => {
     mutation.mutate(user);
   };
 
-  if (!hello.data) console.log("waiting");
-  else console.log(`got: ${hello.data.greeting}`);
-  console.log(`There are ${getUsers.data?.length} users, ${getUsers.data?.map(obj => obj.name)}`);
-  console.log(`got: ${getUser.data?.name} | ${getUser.data?.email}`);
+  if (!hello.data || !getUser.data || !getUsers.data) {
+    console.log("waiting");
+  } else {
+    console.log(`got: ${hello.data.greeting}`);
+    console.log(`There are ${getUsers.data?.length} users, ${getUsers.data?.map(obj => obj.name)}`);
+    console.log(`got: ${getUser.data?.name} | ${getUser.data?.email}`);
+  }
 
 
   return (
