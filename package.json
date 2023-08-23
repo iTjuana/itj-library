@@ -32,6 +32,8 @@
     "next-auth": "^4.21.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-slick": "^0.29.0",
+    "slick-carousel": "^1.8.1",
     "superjson": "^1.13.1",
     "zod": "^3.21.4"
   },
@@ -41,6 +43,7 @@
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@types/react-slick": "^0.23.10",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "autoprefixer": "^10.4.14",
