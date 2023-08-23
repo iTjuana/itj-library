@@ -2,11 +2,6 @@ import { type NextPage } from "next";
 import { api } from "utils/trpc";
 
 const Home: NextPage = () => {
-  
-  const hello = api.inventory.hello.useQuery({ text: "client" });
-
-  if (!hello.data) console.log("waiting");
-  else console.log(`got: ${hello.data.greeting}`);
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
