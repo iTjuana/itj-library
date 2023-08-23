@@ -39,8 +39,8 @@ model Session {
 
 model User {
   id            String        @id @default(cuid())
-  name          String?
-  email         String?       @unique
+  name          String
+  email         String        @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -59,28 +59,28 @@ model VerificationToken {
 model Book {
   idISBN          String      @id @default(cuid())
   isbn            String
-  title           String?
+  title           String
   subtitle        String?
   description     String?
-  language        String?
+  language        Int
   authors         String?
   subjects        String?
   publishDates    String?
   publishers      String?
-  number_of_pages String?
+  number_of_pages Int?
   image           String?
   inventary       Inventary[]
 }
 
 model Inventary {
   id          String        @id @default(cuid())
-  status      String
-  format      String
-  condition   String
+  bookId      String
+  status      Int
+  format      Int
+  condition   Int
   bookOwner   String
   dateAdded   DateTime      @default(now())
   lastUpdate  DateTime      @updatedAt
-  bookId      String
   book        Book          @relation(fields: [bookId], references: [idISBN], onDelete: Cascade)
   transaction Transaction[]
 
