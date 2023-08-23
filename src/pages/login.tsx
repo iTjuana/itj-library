@@ -13,7 +13,7 @@ const LogIn: NextPage = () => {
     <>
       <Head>
         <title>Log in</title>
-        <meta name="description" content="Created by Rubber Ducks" />
+        <meta name="description" content="Log in to iTj Library" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="grid h-screen grid-cols-1 items-center gap-0 bg-white md:grid-cols-2">
