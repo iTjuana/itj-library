@@ -121,16 +121,12 @@ const Catalog = () => {
   });
 
   const count: number | undefined = api.inventory.count.useQuery().data;
-  const inventory = api.inventory.inventory.useQuery(filters).data ?? [];
+  const inventory = api.inventory.getByFilter.useQuery(filters).data ?? [];
   const inventoryBooks = api.books.findBooksById.useQuery(
     inventory?.map((book: Inventary) => book.bookId)
   );
-  console.log("inventory", inventory);
-  console.log("inventoryBooks", inventoryBooks);
 
   useEffect(() => {
-    console.log("useEffect...");
-
     if (searchParams.has("page"))
       setPage(parseInt(searchParams.get("page") as unknown as string));
 
@@ -207,7 +203,6 @@ const Catalog = () => {
                 size="large"
                 page={page}
                 onChange={(e, val) => {
-                  console.log("val", val);
                   setPage(val);
                   // router.push(`?page=${val}`, undefined, { shallow: true });
                 }}

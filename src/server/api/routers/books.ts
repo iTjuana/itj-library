@@ -4,39 +4,26 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { type Book, PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
-
-const bookInput = z
-  .object({
-    isbn: z.string(),
-    title: z.string(),
-    subtitle: z.string(),
-    description: z.string(),
-    language: z.string(),
-    authors: z.string(),
-    subjects: z.string(),
-    publishDates: z.string(),
-    publishers: z.string(),
-    number_of_pages: z.string(),
-    image: z.string(),
-  })
-  .required();
-
-async function getBooksTable(): Promise<Book[] | undefined> {
-  try {
-    return await prisma.book.findMany();
-  } catch (error) {
-    console.error("Error findMany books", error);
-  }
-}
+const bookInput = z.object({
+  isbn: z.string(),
+  title: z.string(),
+  subtitle: z.string(),
+  description: z.string(),
+  language: z.number(),
+  authors: z.string(),
+  subjects: z.string(),
+  publishDates: z.string(),
+  publishers: z.string(),
+  number_of_pages: z.number(),
+  image: z.string(),
+});
 
 export const booksRouter = createTRPCRouter({
   // Get all books
-  getBooks: publicProcedure.query(async () => {
+  getBooks: publicProcedure.query(async ({ ctx }) => {
     // Logic to get all books
-    return await prisma.book.findMany();
+    return await ctx.prisma.book.findMany();
   }),
 
   // Find book by id
@@ -48,10 +35,9 @@ export const booksRouter = createTRPCRouter({
         })
         .required()
     )
-    .query(async (opts) => {
+    .query(async ({ ctx, input }) => {
       // Logic to find book by id
-      const { input } = opts;
-      return await prisma.book.findUnique({
+      return await ctx.prisma.book.findUnique({
         where: {
           idISBN: input.id,
         },
@@ -61,9 +47,8 @@ export const booksRouter = createTRPCRouter({
   // Find books by id
   findBooksById: publicProcedure
     .input(z.array(z.string()))
-    .query(async (opts) => {
-      const { input } = opts;
-      return await prisma.book.findMany({
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.book.findMany({
         where: {
           idISBN: { in: input },
         },
@@ -72,25 +57,25 @@ export const booksRouter = createTRPCRouter({
 
   // Add Book
   addBook: publicProcedure // TODO: Change to privateProcedure?
-    .input(bookInput)
-    .mutation(async (opts) => {
+    .input(bookInput.required())
+    .mutation(async ({ ctx, input }) => {
       // Logic to add book
-      const { input } = opts;
-      return await prisma.book.create({ data: input });
+      return await ctx.prisma.book.create({ data: input });
     }),
 
   // Update Book
   updateBook: publicProcedure // TODO: Change to privateProcedure?
     .input(
-      z.object({
-        idISBN: z.string(),
-        bookInfo: bookInput,
-      })
+      z
+        .object({
+          idISBN: z.string(),
+          bookInfo: bookInput,
+        })
+        .required()
     )
-    .mutation(async (opts) => {
+    .mutation(async ({ ctx, input }) => {
       // Logic to update book
-      const { input } = opts;
-      return await prisma.book.update({
+      return await ctx.prisma.book.update({
         where: {
           idISBN: input.idISBN,
         },
@@ -107,10 +92,9 @@ export const booksRouter = createTRPCRouter({
         })
         .required()
     )
-    .mutation(async (opts) => {
+    .mutation(async ({ ctx, input }) => {
       // Logic to remove book
-      const { input } = opts;
-      return await prisma.book.delete({
+      return await ctx.prisma.book.delete({
         where: {
           idISBN: input.idISBN,
         },
