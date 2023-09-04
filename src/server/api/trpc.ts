@@ -17,7 +17,13 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "~/server/db";
+import { type AxiomRequest } from "next-axiom/dist/withAxiom";
 
+const isAxiomRequest = (
+  req?: NextApiRequest | AxiomRequest
+): req is AxiomRequest => {
+  return Boolean((req as AxiomRequest)?.log);
+};
 /**
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.
@@ -26,6 +32,11 @@ import { prisma } from "~/server/db";
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
+
+  if (!isAxiomRequest(req)) {
+    throw new Error("req is not the AxiomRequest expected");
+  }
+
 
   /**
    * Uses faster "unstable_getServerSession" in next-auth v4 that avoids
@@ -37,10 +48,13 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   // const session = opts && (await getServerSession(opts, nextAuthOptions));
   const session = req && res && (await getServerAuthSession(opts));
 
+  const log = session ? req.log.with({ userId: session.user.id }) : req.log;
+
   // for API-response caching see https://trpc.io/docs/caching
   return {
     prisma,
     session,
+    log,
   };
 };
 

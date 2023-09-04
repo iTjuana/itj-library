@@ -2,6 +2,8 @@ import { type NextPage } from "next";
 import { api } from "utils/trpc";
 
 const Home: NextPage = () => {
+  const test = api.books.getBooks;
+  test.useQuery();
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">

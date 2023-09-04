@@ -2,7 +2,7 @@ import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { Analytics } from "@vercel/analytics/react";
-
+export { useReportWebVitals } from 'next-axiom';
 import "~/styles/globals.css";
 
 // fontawesome icon config for css working properly - https://fontawesome.com/docs/web/use-with/react/use-with
