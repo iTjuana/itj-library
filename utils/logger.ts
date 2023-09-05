@@ -16,7 +16,7 @@ class customLogger {
 
    info(message: string, data?: any) {
     if (this.logLevel <= LogLevel.INFO) {
-        this.log(LogLevel.INFO, message, data);
+        this.log(LogLevel.INFO, `[${LogLevel.INFO.toUpperCase()}]: ${message}`, data);
     }
    }
 
