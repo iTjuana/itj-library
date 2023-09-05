@@ -24,7 +24,7 @@ export const booksRouter = createTRPCRouter({
   // Get all books
   getBooks: publicProcedure.query(async ({ ctx }) => {
     // Logic to get all books
-    logger.info('Using custom logger', { ctx });
+    logger.info('Using custom logger', ctx.session);
     return await ctx.prisma.book.findMany();
   }),
 
