@@ -1,5 +1,5 @@
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import { Button } from "~/components/button";
+import Button from "@mui/material/Button";
 
 type Stat = { name: string; value: number; color: string };
 
@@ -102,7 +102,7 @@ const Manage = ({ stats }: DashboardProps) => {
             <h3 className="text-2xl font-medium text-[#323232]">Inventory</h3>
             <div className="flex gap-2.5 px-8">
               <Button onClick={() => console.log("edit")}>Edit</Button>
-              <Button onClick={() => console.log("delete")} isSecondary={true}>
+              <Button onClick={() => console.log("delete")}>
                 Delete
               </Button>
             </div>
