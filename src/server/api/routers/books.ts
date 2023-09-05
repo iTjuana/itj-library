@@ -4,6 +4,7 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { log } from 'next-axiom';
 
 const bookInput = z.object({
   isbn: z.string(),
@@ -23,6 +24,7 @@ export const booksRouter = createTRPCRouter({
   // Get all books
   getBooks: publicProcedure.query(async ({ ctx }) => {
     // Logic to get all books
+    log.info('[INFO]: This is a custom log!');
     return await ctx.prisma.book.findMany();
   }),
 
