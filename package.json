@@ -30,6 +30,7 @@
     "@vercel/analytics": "^1.0.1",
     "next": "^13.2.4",
     "next-auth": "^4.21.0",
+    "next-axiom": "^1.0.0-rc.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-slick": "^0.29.0",
