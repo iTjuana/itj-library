@@ -24,7 +24,7 @@ const bookInput = z.object({
 export const booksRouter = createTRPCRouter({
   // Get all books
   getBooks: publicProcedure.query(async ({ ctx }) => {
-    logger.info('Getting all books...', ctx.res.status)
+    logger.info('Getting all books...')
     // Logic to get all books
     return await ctx.prisma.book.findMany();
   }),
