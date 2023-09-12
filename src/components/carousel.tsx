@@ -1,6 +1,7 @@
 import Slider from "react-slick";
 import Link from "next/link";
 import Image from "next/image";
+import styles from "src/styles/carousel.module.css";
 
 const settings = {
   responsive: [
@@ -58,7 +59,7 @@ export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
   }
 
   return (
-    <div>
+    <div className={styles.Container}>
       <Slider
         {...settings}
         dots={dots}

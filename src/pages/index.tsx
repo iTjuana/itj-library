@@ -1,12 +1,16 @@
 import { type NextPage } from "next";
 import { api } from "utils/trpc";
+import { SimpleCarousel } from "~/components/carousel";
 
 const Home: NextPage = () => {
+  const inventoryBooks = api.books.getBooks();
+
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
         <h1 className="text-4xl font-medium text-[#1C325F]">Books</h1>
         {/* Carrousel */}
+        <SimpleCarousel books={inventoryBooks.data} />
         {/* Instructions */}
         <section className="flex max-w-3xl flex-col items-center gap-4">
           <h2 className="text-2xl font-medium text-[#323232]">Instructions</h2>

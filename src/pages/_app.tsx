@@ -11,7 +11,6 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 // slick carousel css
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "~/styles/carousel.css";
 
 // tRPC setup from - https://trpc.io/docs/client/nextjs/setup
 import { api } from "utils/trpc";

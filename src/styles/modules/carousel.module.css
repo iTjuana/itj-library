@@ -1,44 +1,44 @@
-.slick-slide div {
+.Carousel:global(.slick-slide) div {
     outline: none !important;
 }
 
-.slick-list {
+.Carousel:global(.slick-list) {
     padding-bottom: 2rem;
     height: auto;
 }
 
 
-.slick-prev {
+.Carousel:global(.slick-prev) {
     left: 3% !important;
     z-index: 1;
 }
 
-.slick-next {
+.Carousel:global(.slick-next) {
     right: 3% !important;
     z-index: 1;
 }
 
-.slick-prev:before,
-.slick-next:before {
+.Carousel:global(.slick-prev):before,
+.Carousel:global(.slick-next):before {
     color: #333 !important;
 }
 
-.slick-dots li {
+.Carousel:global(.slick-dots) li {
     margin: 0 2rem;
 }
 
-.slick-dots li button:before {
+.Carousel:global(.slick-dots) li button:before {
     color: #333 !important;
     font-size: 30px;
     content: "-"
 }
 
 @media (max-width: 768px) {
-    .slick-prev {
+    .Carousel:global(.slick-prev) {
         left: 0% !important;
     }
 
-    .slick-next {
+    .Carousel:global(.slick-next) {
         right: 0% !important;
     }
 
