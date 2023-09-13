@@ -11,6 +11,11 @@ datasource db {
   relationMode = "prisma"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output = "../ERD.png"
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -67,7 +72,7 @@ model Book {
     title        String
     subtitle     String?   
     description  String?   
-    language     Int
+    language     Language
     authors      String?
     subjects     String?
     publishDates String?
@@ -77,19 +82,52 @@ model Book {
     inventary    Inventary[]
 }
 
+enum Language {
+  ENGLISH
+  SPANISH
+  FRENCH
+  OTHER
+}
+
 model Inventary {
     id           String   @id @default(cuid())
     book         Book     @relation(fields: [bookId], references: [idISBN], onDelete: Cascade)
     bookId       String
-    status       Int   //Available, Unavailable, Borrowed, In Review, Expired
-    format       Int   //Hardcover, Paperbacks, Ebooks, Magazine/Comic 
-    condition    Int   //Like New, Good, Fair, Poor
+    status       Status   
+    format       Format 
+    condition    Condition
     bookOwner    String
     dateAdded    DateTime @default(now())
     lastUpdate   DateTime @updatedAt
     transaction  Transaction[]
     @@index([bookId])
 }
+
+enum Status {
+   AVAILABLE
+   UNAVAILABLE
+   BORROWED
+   INREVIEW
+   EXPIRED
+   RETIRED
+   OTHER
+ }
+
+ enum Format {
+   HARDCOVER
+   PAPERBACK
+   EBOOK
+   MAGAZINE
+   OTHER
+ }
+
+  enum Condition {
+   LIKENEW
+   GOOD
+   FAIR
+   POOR
+   OTHER
+ }
 
 model Transaction {
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
