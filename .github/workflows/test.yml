@@ -7,24 +7,27 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: []
+
+env:
+  node-version: 18.x
 
 jobs:
   jest-tests:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ env.node-version }}
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: ${{ env.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm test
+    - run: npm run coverage
+
+    - name: Upload code coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: coverage
