@@ -14,12 +14,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -57,12 +57,12 @@ model VerificationToken {
 }
 
 model Book {
-  idISBN          String      @id @default(cuid())
+  idISBN          String        @id @default(cuid())
   isbn            String
   title           String
   subtitle        String?
   description     String?
-  language        Int
+  language        Book_language
   authors         String?
   subjects        String?
   publishDates    String?
@@ -73,15 +73,15 @@ model Book {
 }
 
 model Inventary {
-  id          String        @id @default(cuid())
+  id          String              @id @default(cuid())
   bookId      String
-  status      Int
-  format      Int
-  condition   Int
+  status      Inventary_status
+  format      Inventary_format
+  condition   Inventary_condition
   bookOwner   String
-  dateAdded   DateTime      @default(now())
-  lastUpdate  DateTime      @updatedAt
-  book        Book          @relation(fields: [bookId], references: [idISBN], onDelete: Cascade)
+  dateAdded   DateTime            @default(now())
+  lastUpdate  DateTime            @updatedAt
+  book        Book                @relation(fields: [bookId], references: [idISBN], onDelete: Cascade)
   transaction Transaction[]
 
   @@index([bookId])
@@ -98,4 +98,36 @@ model Transaction {
   @@id([userId, inventaryId])
   @@index([userId])
   @@index([inventaryId])
+}
+
+enum Inventary_status {
+  AVAILABLE
+  UNAVAILABLE
+  BORROWED
+  INREVIEW
+  EXPIRED
+  RETIRED
+  OTHER
+}
+
+enum Inventary_format {
+  HARDCOVER
+  PAPERBACK
+  EBOOK
+  MAGAZINE
+  OTHER
+}
+
+enum Inventary_condition {
+  LIKENEW
+  GOOD
+  FAIR
+  POOR
+}
+
+enum Book_language {
+  ENGLISH
+  SPANISH
+  FRENCH
+  OTHER
 }
