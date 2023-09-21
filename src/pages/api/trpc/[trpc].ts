@@ -10,10 +10,19 @@ export default trpcNext.createNextApiHandler({
   createContext: createTRPCContext,
   onError:
     env.NODE_ENV === "development"
-      ? ({ path, error }) => {
-          console.error(
-            `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
-          );
+      ? ({ error, type, path, input }) => {
+          const data = {
+            'environment':'dev',
+            'path' : path,
+            'input': input,
+            'type' : type,
+            'error_code': error.code,
+            'error_msg': error.message,
+            }
+            console.error(
+              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
+            );  
+          return data
         }
       : undefined,
 });
