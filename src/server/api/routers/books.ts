@@ -26,7 +26,7 @@ export const booksRouter = createTRPCRouter({
   getBooks: publicProcedure.query(async ({ ctx }) => {
     try{
       // Logic to get all books
-      logger.info('Getting all books...')
+      logger.info('Gertting all books...',{'statusCode':ctx.res.statusCode, 'query': ctx.req.query})
       return await ctx.prisma.book.findMany();
     } catch(error){
       logger.error('There was an error getting books', error);
