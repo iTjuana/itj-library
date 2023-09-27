@@ -8,6 +8,11 @@ datasource db {
   relationMode = "prisma"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output = "../prisma-erd.png"
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -62,7 +67,7 @@ model Book {
   title           String
   subtitle        String?
   description     String?
-  language        Book_language
+  language        Int
   authors         String?
   subjects        String?
   publishDates    String?
@@ -75,9 +80,9 @@ model Book {
 model Inventary {
   id          String              @id @default(cuid())
   bookId      String
-  status      Inventary_status
-  format      Inventary_format
-  condition   Inventary_condition
+  status      Int
+  format      Int
+  condition   Int
   bookOwner   String
   dateAdded   DateTime            @default(now())
   lastUpdate  DateTime            @updatedAt
@@ -98,36 +103,4 @@ model Transaction {
   @@id([userId, inventaryId])
   @@index([userId])
   @@index([inventaryId])
-}
-
-enum Inventary_status {
-  AVAILABLE
-  UNAVAILABLE
-  BORROWED
-  INREVIEW
-  EXPIRED
-  RETIRED
-  OTHER
-}
-
-enum Inventary_format {
-  HARDCOVER
-  PAPERBACK
-  EBOOK
-  MAGAZINE
-  OTHER
-}
-
-enum Inventary_condition {
-  LIKENEW
-  GOOD
-  FAIR
-  POOR
-}
-
-enum Book_language {
-  ENGLISH
-  SPANISH
-  FRENCH
-  OTHER
 }
