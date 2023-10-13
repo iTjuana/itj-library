@@ -1,3 +1,5 @@
+import { TRPCError } from '@trpc/server';
+import { logger } from '../../../../utils/logger'
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -22,9 +24,14 @@ const bookInput = z.object({
 export const booksRouter = createTRPCRouter({
   // Get all books
   getBooks: publicProcedure.query(async ({ ctx }) => {
-    // Logic to get all books
-    return await ctx.prisma.book.findMany();
-  }),
+    try{
+      // Logic to get all books
+      logger.info('Gertting all books...',{'statusCode':ctx.res.statusCode, 'query': ctx.req.query})
+      return await ctx.prisma.book.findMany();
+    } catch(error){
+      logger.error('There was an error getting books', error);
+    }
+  }), 
 
   // Find book by id
   findBookById: publicProcedure
