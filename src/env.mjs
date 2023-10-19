@@ -22,8 +22,6 @@ const server = z.object({
   AUTH0_CLIENT_ID: z.string(),
   AUTH0_CLIENT_SECRET: z.string(),
   AUTH0_ISSUER: z.string(),
-  KEYCLOAK_CLIENT_ID: z.string(),
-  KEYCLOAK_CLIENT_SECRET: z.string(),
 });
 
 /**
@@ -48,8 +46,6 @@ const processEnv = {
   AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
   AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
   AUTH0_ISSUER: process.env.AUTH0_ISSUER,
-  KEYCLOAK_CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID,
-  KEYCLOAK_CLIENT_SECRET: process.env.KEYCLOAK_CLIENT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

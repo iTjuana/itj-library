@@ -5,7 +5,6 @@ import {
   type DefaultSession,
 } from "next-auth";
 import Auth0Provider from "next-auth/providers/auth0";
-import KeycloakProvider from "next-auth/providers/keycloak";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
@@ -48,10 +47,6 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    KeycloakProvider({
-      clientId: env.KEYCLOAK_CLIENT_ID,
-      clientSecret: env.KEYCLOAK_CLIENT_SECRET,
-    }),
     Auth0Provider({
       clientId: env.AUTH0_CLIENT_ID,
       clientSecret: env.AUTH0_CLIENT_SECRET,
