@@ -23,6 +23,13 @@ export const inventoryRouter = createTRPCRouter({
       session: "Session",
     };
   }),
+  getFullInventory: publicProcedure.query(({ ctx, input }) => {
+    return ctx.prisma.inventary.findMany({
+      include: {
+        book: { select: { idISBN: true, title: true, language: true } },
+      },
+    });
+  }),
   getByFilter: publicProcedure
     .input(
       z.object({

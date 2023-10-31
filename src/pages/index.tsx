@@ -1,11 +1,11 @@
+import { CircularProgress } from "@mui/material";
 import { type NextPage } from "next";
 import { api } from "utils/trpc";
 import { SimpleCarousel } from "~/components/carousel";
 
 const Home: NextPage = () => {
-  // ------ Test Logger --------------
-  const books = api.books.getBooks.useQuery().data ?? [];
-  // ------ End Test Logger -----------
+  const books = api.books.getBooks.useQuery();
+
   return (
     <>
       <main className="bg-[#F7F8FC] pb-2 pt-5">
@@ -22,13 +22,19 @@ const Home: NextPage = () => {
           Books
         </h1>
         {/* Carrousel */}
-        <SimpleCarousel
-          books={books.map((book) => ({
-            title: book.title,
-            image: book.image,
-            isbn: book.isbn,
-          }))}
-        />
+        {books.isLoading ? (
+          <CircularProgress />
+        ) : !books.data?.length ? (
+          <></>
+        ) : (
+          <SimpleCarousel
+            books={books.data.map((book) => ({
+              title: book.title,
+              image: book.image,
+              isbn: book.isbn,
+            }))}
+          />
+        )}
         {/* Instructions */}
         <section className="mx-auto mt-4 mt-6 flex max-w-3xl flex-col items-center gap-4">
           <h2 className="text-2xl font-medium text-[#323232]">Instructions</h2>
