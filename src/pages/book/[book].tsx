@@ -136,7 +136,7 @@ const BlankBookPage = () => {
   return (
     <>
       <h1 className="text-4xl font-medium text-[#1C325F]">
-        Sorry, we don't have that book :/
+        Sorry, we don&apos;t have that book :/
       </h1>
     </>
   );

@@ -18,7 +18,7 @@ interface Filters {
 
 const Catalog = () => {
   const searchParams = useSearchParams();
-  const limit = 5;
+  const limit = 9;
 
   const [filters, setFilters] = useState<Filters>({
     status: undefined,

@@ -19,6 +19,12 @@ export const usersRouter = createTRPCRouter({
     return await prisma.user.findMany();
   }),
 
+  // Get all users
+  getUserCount: publicProcedure.query(async () => {
+    // TODO: Change to privateProcedure
+    return await prisma.user.count();
+  }),
+
   // Add user
   addUser: publicProcedure // TODO: Change to privateProcedure?
     .input(userInput)
