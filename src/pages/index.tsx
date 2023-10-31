@@ -1,16 +1,22 @@
 import { type NextPage } from "next";
 import { api } from "utils/trpc";
+import { SimpleCarousel } from "~/components/carousel";
 
 const Home: NextPage = () => {
   // ------ Test Logger --------------
-  const getBooks = api.books.getBooks;
-  getBooks.useQuery();
- // ------ End Test Logger -----------
+  const books = api.books.getBooks.useQuery().data ?? [];
+  // ------ End Test Logger -----------
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
         <h1 className="text-4xl font-medium text-[#1C325F]">Books</h1>
         {/* Carrousel */}
+        <SimpleCarousel
+          books={books.map((book) => ({
+            title: book.title,
+            image: book.image,
+          }))}
+        />
         {/* Instructions */}
         <section className="flex max-w-3xl flex-col items-center gap-4">
           <h2 className="text-2xl font-medium text-[#323232]">Instructions</h2>

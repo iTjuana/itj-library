@@ -33,8 +33,8 @@ const settings = {
 
 export interface CarouselProps {
   books: {
-    title: string;
-    image: string;
+    title: string | null;
+    image: string | null;
   }[];
   size?: "small" | "medium" | "large";
   dots?: boolean;
