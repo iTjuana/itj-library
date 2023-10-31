@@ -38,3 +38,7 @@ export function enumObjToFilterItem(enumObj: any) {
     };
   });
 }
+
+export function getEnumKey(enumObj: any, value: number | undefined) {
+  return value !== undefined ? Object.keys(enumObj)[value] : "";
+}
