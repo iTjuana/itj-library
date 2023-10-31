@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -93,6 +94,7 @@ model Inventary {
 }
 
 model Transaction {
+  id          String              @id @default(cuid())
   userId       String
   inventaryId  String
   borrowedDate DateTime
@@ -100,7 +102,6 @@ model Transaction {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   inventary    Inventary @relation(fields: [inventaryId], references: [id], onDelete: Cascade)
 
-  @@id([userId, inventaryId])
   @@index([userId])
   @@index([inventaryId])
 }
