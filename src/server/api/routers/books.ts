@@ -44,6 +44,52 @@ export const booksRouter = createTRPCRouter({
       });
     }),
 
+  // Get book info for book page by id
+  getBookInfoById: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      // Logic to find book by id
+      return await ctx.prisma.book.findUnique({
+        where: {
+          idISBN: input,
+        },
+        include: {
+          inventary: {
+            select: {
+              id: true,
+              bookId: true,
+              status: true,
+              format: true,
+              condition: true,
+            },
+          },
+        },
+      });
+    }),
+
+  // Get book info for book page by isbn
+  getBookInfoByIsbn: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      // Logic to find book by id
+      return await ctx.prisma.book.findFirst({
+        where: {
+          isbn: input,
+        },
+        include: {
+          inventary: {
+            select: {
+              id: true,
+              bookId: true,
+              status: true,
+              format: true,
+              condition: true,
+            },
+          },
+        },
+      });
+    }),
+
   // Find books by id
   findBooksById: publicProcedure
     .input(z.array(z.string()))
