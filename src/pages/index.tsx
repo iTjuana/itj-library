@@ -8,17 +8,29 @@ const Home: NextPage = () => {
   // ------ End Test Logger -----------
   return (
     <>
-      <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
-        <h1 className="text-4xl font-medium text-[#1C325F]">Books</h1>
+      <main className="bg-[#F7F8FC] pb-2 pt-5">
+        <h1
+          className="
+          mb-4
+          text-center
+          text-4xl
+          font-bold
+          font-medium 
+          text-[#1C325F]
+        "
+        >
+          Books
+        </h1>
         {/* Carrousel */}
         <SimpleCarousel
           books={books.map((book) => ({
             title: book.title,
             image: book.image,
+            isbn: book.isbn,
           }))}
         />
         {/* Instructions */}
-        <section className="flex max-w-3xl flex-col items-center gap-4">
+        <section className="mx-auto mt-4 mt-6 flex max-w-3xl flex-col items-center gap-4">
           <h2 className="text-2xl font-medium text-[#323232]">Instructions</h2>
           <div className="rounded bg-white p-4 text-lg font-medium text-[#323232]">
             <h3 className="text-xl font-semibold">To Borrow:</h3>
