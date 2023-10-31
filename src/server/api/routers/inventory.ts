@@ -26,20 +26,19 @@ export const inventoryRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().min(1).max(25).optional(),
-        availability: z.number().optional(),
+        status: z.number().optional(),
         format: z.number().optional(),
-        language: z.number().optional(),
         page: z.number(),
       })
     )
     .query(({ ctx, input }) => {
-      const { page, availability, format } = input;
+      const { page, status, format } = input;
       const limit = input.limit ?? 25;
       console.log(input);
       return ctx.prisma.inventary.findMany({
         take: limit,
         where: {
-          status: availability,
+          status: status,
           format: format,
         },
         skip: (page - 1) * limit,

@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 type User = { name: string; company: string; email: string; phone: string };
 type BookActivity = {
@@ -34,7 +35,29 @@ const style = {
   borderRadius: 3,
 };
 
-const Manage = () => {
+const SessionComponent = () => {
+  const { data: session, status } = useSession();
+
+  console.log("session:", session);
+  console.log("status:", status);
+
+  if (session) {
+    return (
+      <div className="flex flex-col gap-4 rounded p-4 font-medium">
+        Signed in as {session.user.email} <br />
+        <button onClick={() => void signOut()}>Sign out</button>
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-4 rounded p-4 font-medium">
+      Not signed in <br />
+      <button onClick={() => void signIn()}>Log in</button>
+    </div>
+  );
+};
+
+const Account = () => {
   const user: User = {
     name: "John Doe",
     company: "Dexcom",
@@ -89,11 +112,14 @@ const Manage = () => {
 
   const [open, setOpen] = useState(false);
 
+  console.log("user:", user);
+
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
         <h1 className="text-4xl font-medium text-[#1C325F]">My Account</h1>
         <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] sm:w-1/3">
+          <SessionComponent />
           <h3 className="text-xl font-semibold">General Information</h3>
           <section className="flex flex-col gap-2">
             <div className="flex gap-2.5">
@@ -173,4 +199,4 @@ const Manage = () => {
   );
 };
 
-export default Manage;
+export default Account;

@@ -11,30 +11,13 @@ import { type ReactElement, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { type Book, type Inventary } from "@prisma/client";
-
-// recommended to use instead of enums
-// by https://www.youtube.com/watch?v=jjMbPt_H3RQ
-const AVAILABILITY = {
-  Any: 0,
-  Available: 1,
-  Unavailable: 2,
-} as const;
-
-const FORMAT = {
-  Any: 0,
-  Hardcover: 1,
-  Paperback: 2,
-  Ebook: 3,
-} as const;
-
-const LANGUAGE = {
-  Any: 0,
-  English: 1,
-  Spanish: 2,
-  Other: 3,
-} as const;
-
-type ObjectValues<T> = T[keyof T];
+import {
+  Status,
+  Format,
+  Condition,
+  Language,
+  enumObjToFilterItem,
+} from "utils/enum";
 
 const isObjectEmpty = (object: object) => {
   return Object.keys(object).length === 0 && object.constructor === Object;
@@ -42,7 +25,7 @@ const isObjectEmpty = (object: object) => {
 
 interface Filters {
   limit?: number;
-  availability?: number;
+  status?: number;
   format?: number;
   language?: number;
   page: number;
@@ -109,14 +92,16 @@ const Catalog = () => {
   const searchParams = useSearchParams();
   const limit = 5;
 
+  // join all of these in an object
   const [page, setPage] = useState<number>(1);
-  const [availability, setAvailability] = useState<number | undefined>(
-    undefined
-  );
+  const [status, setStatus] = useState<number | undefined>(undefined);
   const [format, setFormat] = useState<number | undefined>(undefined);
   const [language, setLanguage] = useState<number | undefined>(undefined);
   const [filters, setFilters] = useState<Filters>({
     limit,
+    status,
+    format,
+    language,
     page,
   });
 
@@ -132,7 +117,7 @@ const Catalog = () => {
 
     setFilters({
       limit,
-      availability,
+      status,
       format,
       language,
       page,
@@ -145,21 +130,9 @@ const Catalog = () => {
     );
   }, [inventory, page]);
 
-  const availabilityOptions: FilterItem[] = [
-    { value: AVAILABILITY.Any, name: "All" },
-    { value: AVAILABILITY.Available, name: "Available" },
-    { value: AVAILABILITY.Unavailable, name: "Unavailable" },
-  ];
-  const FormatOptions: FilterItem[] = [
-    { value: FORMAT.Any, name: "All" },
-    { value: FORMAT.Hardcover, name: "Hard-cover" },
-    { value: FORMAT.Paperback, name: "Paperback" },
-  ];
-  const LanguageOptions: FilterItem[] = [
-    { value: LANGUAGE.Any, name: "All" },
-    { value: LANGUAGE.English, name: "English" },
-    { value: LANGUAGE.Spanish, name: "Spanish" },
-  ];
+  const availabilityOptions: FilterItem[] = enumObjToFilterItem(Status);
+  const FormatOptions: FilterItem[] = enumObjToFilterItem(Format);
+  const LanguageOptions: FilterItem[] = enumObjToFilterItem(Language);
 
   return (
     <>
@@ -168,8 +141,8 @@ const Catalog = () => {
         <div className="flex w-full justify-center gap-3">
           <FilterSelect
             label="Availability"
-            value={availability}
-            setValue={setAvailability}
+            value={status}
+            setValue={setStatus}
             items={availabilityOptions}
           />
           <FilterSelect
