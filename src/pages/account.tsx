@@ -42,13 +42,13 @@ const SessionComponent = () => {
 
   const user = api.users.findUserByEmail.useQuery({
     email: session?.user.email ?? "0",
-  });
+  }).data;
   const transactions = api.users.getUserTransactionsById.useQuery({
-    id: user.data?.id ?? "0",
-  });
+    id: user?.id ?? "0",
+  }).data;
 
-  console.log("user db", user.data);
-  console.log("transactions db", transactions.data);
+  console.log("user db", user);
+  console.log("transactions db", transactions);
 
   if (session) {
     return (
@@ -103,7 +103,7 @@ const SessionComponent = () => {
         </div>
         <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] md:w-3/5">
           <h3 className="text-xl font-semibold">Activity</h3>
-          {transactions.data && transactions.data.length > 0 && (
+          {transactions && transactions.length > 0 && (
             <TableContainer component={Paper}>
               <Table aria-label="simple table">
                 <TableHead>
@@ -117,7 +117,7 @@ const SessionComponent = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {transactions.data.map((transaction) => (
+                  {transactions.map((transaction) => (
                     <TableRow
                       key={transaction.id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

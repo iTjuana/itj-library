@@ -46,6 +46,24 @@ export const usersRouter = createTRPCRouter({
     }),
 
   // Get user by email
+  findUserByEmail: publicProcedure // TODO: Change to privateProcedure
+    .input(
+      z
+        .object({
+          email: z.string(),
+        })
+        .required()
+    )
+    .query(async (opts) => {
+      const { input } = opts;
+      return await prisma.user.findUnique({
+        where: {
+          email: input.email,
+        },
+      });
+    }),
+
+  // Get user by email
   getUserTransactionsById: publicProcedure // TODO: Change to privateProcedure
     .input(
       z
