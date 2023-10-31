@@ -14,6 +14,7 @@ const zodInventory = z.object({
   dateAdded: z.date().optional(),
   lastUpdate: z.date().optional(),
   bookId: z.string(),
+  language: z.string(),
 });
 
 export const inventoryRouter = createTRPCRouter({
@@ -29,17 +30,29 @@ export const inventoryRouter = createTRPCRouter({
         status: z.number().optional(),
         format: z.number().optional(),
         page: z.number(),
+        search: z.string().optional(),
+        language: z.number().optional(),
       })
     )
     .query(({ ctx, input }) => {
-      const { page, status, format } = input;
+      const { page, status, format, language } = input;
       const limit = input.limit ?? 25;
-      console.log(input);
+      const search = input.search ?? "";
+
       return ctx.prisma.inventary.findMany({
         take: limit,
         where: {
           status: status,
           format: format,
+          OR: [
+            {
+              book: {
+                title: {
+                  contains: search,
+                },
+              },
+            },
+          ],
         },
         skip: (page - 1) * limit,
       });
