@@ -4,7 +4,7 @@
 
 .slick-list {
     padding-bottom: 2rem;
-    height: auto;
+    height: auto !important;
 }
 
 

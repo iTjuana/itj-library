@@ -34,6 +34,7 @@ const settings = {
 export interface CarouselProps {
   books: {
     title: string | null;
+    isbn: string | null;
     image: string | null;
   }[];
   size?: "small" | "medium" | "large";
@@ -58,32 +59,30 @@ export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
   }
 
   return (
-    <div>
-      <Slider
-        {...settings}
-        dots={dots}
-        speed={speed}
-        slidesToShow={slidesToShow}
-        slidesToScroll={slidesToScroll}
-        infinite={infinite}
-      >
-        {books?.map((book) => (
-          <div
-            className="!flex flex-col items-center justify-center"
-            key={book?.title}
-          >
-            <Link href={book?.title ?? "/"}>
-              <Image
-                src={book.image ?? "/cover-unavailable.jpg"}
-                width={width}
-                height={height}
-                alt="cover"
-              />
-            </Link>
-          </div>
-        ))}
-      </Slider>
-    </div>
+    <Slider
+      {...settings}
+      dots={dots}
+      speed={speed}
+      slidesToShow={slidesToShow}
+      slidesToScroll={slidesToScroll}
+      infinite={infinite}
+    >
+      {books?.map((book) => (
+        <div
+          className="!flex !flex-col !items-center !justify-center"
+          key={book?.title}
+        >
+          <Link href={book.isbn ? `/books/${book.isbn}` : "#"}>
+            <Image
+              src={book.image ?? "/cover-unavailable.jpg"}
+              width={width}
+              height={height}
+              alt="cover"
+            />
+          </Link>
+        </div>
+      ))}
+    </Slider>
   );
 };
 
