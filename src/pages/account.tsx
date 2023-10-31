@@ -6,36 +6,11 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Button,
-  Modal,
-  Box,
-  Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { api } from "utils/trpc";
 import { Status } from "utils/enum";
-
-type User = { name: string; company: string; email: string; phone: string };
-type BookActivity = {
-  id: string;
-  title: string;
-  dueDate: string;
-  status: string;
-  action: string;
-};
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-  borderRadius: 3,
-};
 
 const SessionComponent = () => {
   const { data: session, status } = useSession();
@@ -81,24 +56,6 @@ const SessionComponent = () => {
               </div>
             )} */}
           </section>
-          {/* <Button variant="text" onClick={() => setOpen(true)}> // TODO: how would edit work if account is in another service?
-          Edit general information
-        </Button>
-        <Modal
-          open={open}
-          onClose={() => setOpen(false)}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              TODO:
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Add edit profile functionality
-            </Typography>
-          </Box>
-        </Modal> */}
           <button onClick={() => void signOut()}>Sign out</button>
         </div>
         <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] md:w-3/5">
