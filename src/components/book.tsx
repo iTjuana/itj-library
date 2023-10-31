@@ -49,7 +49,7 @@ export const SimpleBook: React.FunctionComponent<BookProps> = ({ book }) => {
   }
   return (
     <Link
-      href={`/book/${book.idISBN}`}
+      href={`/book/${book.isbn}`}
       className="flex w-1/2 flex-col items-center sm:w-1/5"
     >
       <Image
