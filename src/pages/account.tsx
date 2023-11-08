@@ -83,19 +83,19 @@ const SessionComponent = () => {
                         {transaction.id}
                       </TableCell>
                       <TableCell align="right">
-                        {transaction.inventary.book.title}
+                        {transaction.inventory.book.title}
                       </TableCell>
                       <TableCell align="right">
-                        {transaction.borrowedDate.toLocaleDateString()}
+                        {transaction.actionDate.toLocaleDateString()}
                       </TableCell>
                       <TableCell align="right">
-                        {transaction.dueDate.toLocaleDateString()}
+                        {transaction.dueDate?.toLocaleDateString() ?? "N/A"}
                       </TableCell>
                       <TableCell align="right">
-                        {transaction.inventary.status}
+                        {transaction.inventory.status}
                       </TableCell>
                       <TableCell align="right">
-                        {transaction.inventary.status === 2
+                        {transaction.inventory.status === 2
                           ? "Return"
                           : "See Book"}
                       </TableCell>

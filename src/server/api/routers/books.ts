@@ -1,5 +1,5 @@
-import { TRPCError } from '@trpc/server';
-import { logger } from '../../../../utils/logger'
+import { TRPCError } from "@trpc/server";
+import { logger } from "../../../../utils/logger";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -24,14 +24,17 @@ const bookInput = z.object({
 export const booksRouter = createTRPCRouter({
   // Get all books
   getBooks: publicProcedure.query(async ({ ctx }) => {
-    try{
+    try {
       // Logic to get all books
-      logger.info('Gertting all books...',{'statusCode':ctx.res.statusCode, 'query': ctx.req.query})
+      logger.info("Getting all books...", {
+        statusCode: ctx.res.statusCode,
+        query: ctx.req.query,
+      });
       return await ctx.prisma.book.findMany();
-    } catch(error){
-      logger.error('There was an error getting books', error);
+    } catch (error) {
+      logger.error("There was an error getting books", error);
     }
-  }), 
+  }),
 
   // Find book by id
   findBookById: publicProcedure
@@ -46,7 +49,7 @@ export const booksRouter = createTRPCRouter({
       // Logic to find book by id
       return await ctx.prisma.book.findUnique({
         where: {
-          idISBN: input.id,
+          id: input.id,
         },
       });
     }),
@@ -58,10 +61,10 @@ export const booksRouter = createTRPCRouter({
       // Logic to find book by id
       return await ctx.prisma.book.findUnique({
         where: {
-          idISBN: input,
+          id: input,
         },
         include: {
-          inventary: {
+          inventory: {
             select: {
               id: true,
               bookId: true,
@@ -84,7 +87,7 @@ export const booksRouter = createTRPCRouter({
           isbn: input,
         },
         include: {
-          inventary: {
+          inventory: {
             select: {
               id: true,
               bookId: true,
@@ -103,7 +106,7 @@ export const booksRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.book.findMany({
         where: {
-          idISBN: { in: input },
+          id: { in: input },
         },
       });
     }),
@@ -121,7 +124,7 @@ export const booksRouter = createTRPCRouter({
     .input(
       z
         .object({
-          idISBN: z.string(),
+          id: z.string(),
           bookInfo: bookInput,
         })
         .required()
@@ -130,7 +133,7 @@ export const booksRouter = createTRPCRouter({
       // Logic to update book
       return await ctx.prisma.book.update({
         where: {
-          idISBN: input.idISBN,
+          id: input.id,
         },
         data: input.bookInfo,
       });
@@ -141,7 +144,7 @@ export const booksRouter = createTRPCRouter({
     .input(
       z
         .object({
-          idISBN: z.string(),
+          id: z.string(),
         })
         .required()
     )
@@ -149,7 +152,7 @@ export const booksRouter = createTRPCRouter({
       // Logic to remove book
       return await ctx.prisma.book.delete({
         where: {
-          idISBN: input.idISBN,
+          id: input.id,
         },
       });
     }),

@@ -4,7 +4,7 @@ import { CircularProgress, Pagination } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
-import { type Inventary } from "@prisma/client";
+import { type Inventory } from "@prisma/client";
 import { Filters } from "~/components/filters";
 
 interface Filters {
@@ -31,7 +31,7 @@ const Catalog = () => {
 
   const inventory = api.inventory.getByFilter.useQuery(filters).data ?? [];
   const inventoryBooks = api.books.findBooksById.useQuery(
-    inventory?.map((book: Inventary) => book.bookId)
+    inventory?.map((book: Inventory) => book.bookId)
   );
   const count: number | undefined = api.inventory.count.useQuery().data ?? 0;
 
@@ -60,7 +60,7 @@ const Catalog = () => {
             <>
               <div className="flex flex-wrap justify-center gap-3 sm:w-5/6">
                 {inventoryBooks.data?.map((book) => (
-                  <SimpleBook book={book} key={book?.idISBN} />
+                  <SimpleBook book={book} key={book?.id} />
                 ))}
               </div>
               <Pagination

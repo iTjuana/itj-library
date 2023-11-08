@@ -179,12 +179,13 @@ See also [gitmoji](https://gitmoji.carloscuesta.me/).
 
 Git branches can be classified into the following branches:
 
-- Bug Fix: Fixes a bug
-- Hot Fix: Applies only after the defect is live
-- Feature Branch: Implements a new feature
-- Experimental Branch: Tries out new things that may not be on release
-- WIP branch: Work in progress
-- Release: Support preparationof a new production release
+- Bug Fix: Fixes a bug e.g. `fix/bug-123`
+- Hot Fix: Applies only after the defect is live e.g. `hotfix/bug-123`
+- Feature Branch: Implements a new feature e.g. `feature/feature-123`
+- Chore: Involves less code changes e.g. `chore/code-cleanup`
+- Experimental Branch: Tries out new things that may not be on release e.g. `experimental/new-feature`
+- WIP branch: Work in progress e.g. `wip/new-feature`
+- Release: Support preparationof a new production release e.g. `release/1.0.0`
 
 Naming Conventions:
 

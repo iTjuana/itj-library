@@ -17,7 +17,7 @@ import { Status, Format, Condition, Language, getEnumKey } from "utils/enum";
 interface BookInfoPageProps {
   book:
     | (Book & {
-        inventary: {
+        inventory: {
           id: string;
           bookId: string;
           status: number;
@@ -126,7 +126,7 @@ const BookInfoPage = ({ book }: BookInfoPageProps) => {
         </div>
       </div>
       <div>
-        <InventoryTable inventory={book?.inventary} />
+        <InventoryTable inventory={book?.inventory} />
       </div>
     </div>
   );
