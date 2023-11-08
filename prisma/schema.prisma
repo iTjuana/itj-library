@@ -51,7 +51,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  transaction   Transaction[]
+  transactions  Transaction[]
+  notes         Note[]
 }
 
 model VerificationToken {
@@ -63,7 +64,7 @@ model VerificationToken {
 }
 
 model Book {
-  idISBN          String        @id @default(cuid())
+  id              String        @id @default(cuid())
   isbn            String
   title           String
   subtitle        String?
@@ -73,35 +74,52 @@ model Book {
   subjects        String?
   publishDates    String?
   publishers      String?
-  number_of_pages Int?
+  numberOfPages   Int?
   image           String?
-  inventary       Inventary[]
+  inventory       Inventory[]
+  userNotes       Note[]
 }
 
-model Inventary {
+model Inventory {
   id          String              @id @default(cuid())
   bookId      String
   status      Int
   format      Int
   condition   Int
   bookOwner   String
+  tagId       String?
+  ownerNote   String?
   dateAdded   DateTime            @default(now())
   lastUpdate  DateTime            @updatedAt
-  book        Book                @relation(fields: [bookId], references: [idISBN], onDelete: Cascade)
-  transaction Transaction[]
+  book        Book                @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
 
   @@index([bookId])
 }
 
 model Transaction {
-  id          String              @id @default(cuid())
+  id           String    @id @default(cuid())
   userId       String
-  inventaryId  String
-  borrowedDate DateTime
-  dueDate      DateTime
+  inventoryId  String
+  action       Int  
+  actionDate   DateTime  @default(now())
+  dueDate      DateTime?
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  inventary    Inventary @relation(fields: [inventaryId], references: [id], onDelete: Cascade)
+  inventary    Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@index([inventaryId])
+  @@index([inventoryId])
+}
+
+model Note {
+  id           String    @id @default(cuid())
+  userId       String
+  bookId       String
+  body         String
+  date         DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([bookId])
 }
