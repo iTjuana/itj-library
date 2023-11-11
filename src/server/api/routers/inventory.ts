@@ -7,14 +7,16 @@ import {
 
 const zodInventory = z.object({
   id: z.string().optional(),
+  bookId: z.string(),
   status: z.number(),
   format: z.number(),
   condition: z.number(),
   bookOwner: z.string(),
+  tagId: z.string().optional(),
+  ownerNote: z.string().optional(),
+  isDonated: z.boolean().optional(),
   dateAdded: z.date().optional(),
   lastUpdate: z.date().optional(),
-  bookId: z.string(),
-  language: z.string(),
 });
 
 export const inventoryRouter = createTRPCRouter({
@@ -24,9 +26,9 @@ export const inventoryRouter = createTRPCRouter({
     };
   }),
   getFullInventory: publicProcedure.query(({ ctx, input }) => {
-    return ctx.prisma.inventary.findMany({
+    return ctx.prisma.inventory.findMany({
       include: {
-        book: { select: { idISBN: true, title: true, language: true } },
+        book: { select: { id: true, title: true, language: true } },
       },
     });
   }),
@@ -46,7 +48,7 @@ export const inventoryRouter = createTRPCRouter({
       const limit = input.limit ?? 25;
       const search = input.search ?? "";
 
-      return ctx.prisma.inventary.findMany({
+      return ctx.prisma.inventory.findMany({
         take: limit,
         where: {
           status: status,
@@ -65,14 +67,14 @@ export const inventoryRouter = createTRPCRouter({
       });
     }),
   getByBookId: publicProcedure.input(z.string()).query(({ ctx, input }) => {
-    return ctx.prisma.inventary.findMany({
+    return ctx.prisma.inventory.findMany({
       where: {
         bookId: input,
       },
     });
   }),
   count: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.inventary.count();
+    return ctx.prisma.inventory.count();
   }),
   add: publicProcedure
     .input(zodInventory.required())
@@ -80,7 +82,7 @@ export const inventoryRouter = createTRPCRouter({
       // const { success } = await ratelimit.limit(authorId);
       // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
-      const post = await ctx.prisma.inventary.create({
+      const post = await ctx.prisma.inventory.create({
         data: input,
       });
 
@@ -92,7 +94,7 @@ export const inventoryRouter = createTRPCRouter({
       // const { success } = await ratelimit.limit(authorId);
       // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
-      const post = await ctx.prisma.inventary.update({
+      const post = await ctx.prisma.inventory.update({
         where: {
           id: input.id,
         },

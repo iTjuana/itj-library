@@ -85,7 +85,7 @@ export const usersRouter = createTRPCRouter({
           userId: input.id,
         },
         include: {
-          inventary: {
+          inventory: {
             select: {
               status: true,
               book: {
