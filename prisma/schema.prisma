@@ -89,7 +89,7 @@ model Inventory {
   bookOwner   String
   tagId       String?
   ownerNote   String?
-  isDonated   Boolean
+  isDonated   Boolean             @default(false)
   dateAdded   DateTime            @default(now())
   lastUpdate  DateTime            @updatedAt
   book        Book                @relation(fields: [bookId], references: [id], onDelete: Cascade)

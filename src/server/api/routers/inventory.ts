@@ -7,14 +7,16 @@ import {
 
 const zodInventory = z.object({
   id: z.string().optional(),
+  bookId: z.string(),
   status: z.number(),
   format: z.number(),
   condition: z.number(),
   bookOwner: z.string(),
+  tagId: z.string().optional(),
+  ownerNote: z.string().optional(),
+  isDonated: z.boolean().optional(),
   dateAdded: z.date().optional(),
   lastUpdate: z.date().optional(),
-  bookId: z.string(),
-  language: z.string(),
 });
 
 export const inventoryRouter = createTRPCRouter({
