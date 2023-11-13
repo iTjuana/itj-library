@@ -30,6 +30,14 @@ export const Language = {
   Other: 3,
 };
 
+export const Action = {
+  Borrow: 0,
+  Return: 1,
+  Reviewed: 2,
+  Retire: 3,
+  Other: 4,
+};
+
 export function enumObjToFilterItem(enumObj: any) {
   return Object.keys(enumObj).map((key, index) => {
     return {

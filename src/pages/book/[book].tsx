@@ -1,5 +1,8 @@
 import {
+  Box,
+  Button,
   CircularProgress,
+  Modal,
   Paper,
   Table,
   TableBody,
@@ -7,12 +10,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { type Book } from "@prisma/client";
 import { api } from "utils/trpc";
 import { Status, Format, Condition, Language, getEnumKey } from "utils/enum";
+import { getUserId } from "utils/session";
+import { useTransaction } from "~/hooks/useTransaction";
 
 interface BookInfoPageProps {
   book:
@@ -28,6 +35,129 @@ interface BookInfoPageProps {
     | null
     | undefined;
 }
+
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
+const getDatePlusDays = (days: number) => {
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + days);
+  return dueDate;
+};
+
+const Wishlist = ({
+  inventoryId,
+  userId,
+  action,
+}: {
+  inventoryId: string;
+  userId: string;
+  action: number;
+}) => {
+  const [open, setOpen] = useState(false);
+  const defaultBorrowDays = 14;
+
+  return (
+    <>
+      <Button
+        variant="contained"
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        Add to Wishlist
+      </Button>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Wishlist
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Not yet implemented
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            Exit
+          </Button>
+        </Box>
+      </Modal>
+    </>
+  );
+};
+
+const Borrow = ({
+  inventoryId,
+  userId,
+  action,
+}: {
+  inventoryId: string;
+  userId: string;
+  action: number;
+}) => {
+  const [open, setOpen] = useState(false);
+  const defaultBorrowDays = 14;
+
+  // check if we should do this in main component (see if userId would be visible on html props)
+  const userIdFromSession = getUserId();
+
+  return (
+    <>
+      <Button
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        Borrow
+      </Button>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Borrow Book
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Due Date: {getDatePlusDays(defaultBorrowDays).getDate()}
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => {
+              useTransaction(
+                inventoryId,
+                userIdFromSession,
+                action,
+                defaultBorrowDays
+              );
+            }}
+          >
+            Confirm
+          </Button>
+        </Box>
+      </Modal>
+    </>
+  );
+};
 
 const InventoryTable = ({
   inventory,
@@ -85,7 +215,15 @@ const InventoryTable = ({
                 {getEnumKey(Condition, row.condition)}
               </TableCell>
               <TableCell align="right">
-                {getEnumKey(Status, row.status)}
+                {row.status === Status.Available ? (
+                  <Borrow inventoryId={row.id} userId={row.bookId} action={0} />
+                ) : (
+                  <Wishlist
+                    inventoryId={row.id}
+                    userId={row.bookId}
+                    action={0}
+                  />
+                )}
               </TableCell>
             </TableRow>
           ))}
