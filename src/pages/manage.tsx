@@ -2,6 +2,7 @@ import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { CircularProgress } from "@mui/material";
 import { api } from "utils/trpc";
+import Dialog from 'src/components/dialog';
 import {
   Status,
   Format,
@@ -78,6 +79,7 @@ const Manage = () => {
             <div className="flex gap-2.5 px-8">
               <Button onClick={() => console.log("edit")}>Edit</Button>
               <Button onClick={() => console.log("delete")}>Delete</Button>
+              <Dialog textButton='Add'></Dialog>
             </div>
             {inventory.isLoading ? (
               <CircularProgress />
