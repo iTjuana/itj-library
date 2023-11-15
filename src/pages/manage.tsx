@@ -2,7 +2,15 @@ import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { CircularProgress } from "@mui/material";
 import { api } from "utils/trpc";
-import { Status, Format, Condition, Language, getEnumKey } from "utils/enum";
+import {
+  Status,
+  Format,
+  Condition,
+  Language,
+  getEnumKey,
+  TransactionStatus,
+} from "utils/enum";
+import { ToReviewTable } from "~/components/toReviewTable";
 
 type Stat = { name: string; value: number; color: string };
 
@@ -17,18 +25,23 @@ const Manage = () => {
 
   const userCount = api.users.getUserCount.useQuery();
   const inventory = api.inventory.getFullInventory.useQuery();
+  const transactions = api.transaction.getByFilter.useQuery({
+    status: TransactionStatus.Returned,
+  });
 
   const stats = [
     { name: "Active Users", value: userCount.data, color: "#088484" },
     { name: "Total Books", value: inventory.data?.length, color: "#4DBCA1" },
     {
       name: "Available Books",
-      value: inventory.data?.filter((book) => book.status === 0).length,
+      value: inventory.data?.filter((book) => book.status === Status.Available)
+        .length,
       color: "#FFAE26",
     },
     {
       name: "Borrowed Books",
-      value: inventory.data?.filter((book) => book.status === 2).length,
+      value: inventory.data?.filter((book) => book.status === Status.Borrowed)
+        .length,
       color: "#F45758",
     },
   ];
@@ -66,7 +79,6 @@ const Manage = () => {
               <Button onClick={() => console.log("edit")}>Edit</Button>
               <Button onClick={() => console.log("delete")}>Delete</Button>
             </div>
-            {/* Data Table */}
             {inventory.isLoading ? (
               <CircularProgress />
             ) : !inventory.data?.length ? (
@@ -89,6 +101,19 @@ const Manage = () => {
                 pageSizeOptions={[5, 10]}
                 checkboxSelection
               />
+            )}
+          </div>
+        </section>
+        {/* To Review */}
+        <section className="flex max-w-7xl flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
+            <h3 className="text-2xl font-medium text-[#323232]">To Review</h3>
+            {transactions.isLoading ? (
+              <CircularProgress />
+            ) : !transactions.data?.length ? (
+              <p>No books to Review</p>
+            ) : (
+              <ToReviewTable transactions={transactions.data} />
             )}
           </div>
         </section>

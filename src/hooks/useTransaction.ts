@@ -1,102 +1,256 @@
-import { Status, Action } from "utils/enum";
+import { Status, TransactionStatus } from "utils/enum";
 import { api } from "utils/trpc";
 import { logger } from "utils/logger";
 import { useEffect, useState } from "react";
 
 type Response = {
-  success: boolean | null;
-  message: string | null;
+  success: boolean | undefined;
+  message: string | undefined;
 };
 
-type Transaction = {
-  id: string;
-  actionDate: Date;
+type CreateTransaction = {
+  id?: string;
   userId: string;
   inventoryId: string;
-  action: number;
+  status: number;
+  borrowDate: Date;
   dueDate?: Date;
+  returnDate?: Date;
+  reviewDate?: Date;
 };
 
-const getStatusFromAction = (action: number) => {
-  switch (action) {
-    case Action.Borrow:
+type UpdateTransaction = {
+  id: string;
+  userId?: string;
+  inventoryId?: string;
+  status?: number;
+  borrowDate?: Date;
+  dueDate?: Date;
+  returnDate?: Date;
+  reviewDate?: Date;
+};
+
+const getStatusFromTransactionStatus = (status: number) => {
+  switch (status) {
+    case TransactionStatus.Borrowed:
       return Status.Borrowed;
-    case Action.Return:
+    case TransactionStatus.Returned:
       return Status.In_review;
-    case Action.Reviewed:
+    case TransactionStatus.Reviewed:
       return Status.Available;
-    case Action.Retire:
-      return Status.Unavailable;
     default:
       return Status.Other;
   }
 };
 
-export const useTransaction = (
-  inventoryId: string,
-  userId: string,
-  action: number,
-  daysBorrowed: number = 0
-) => {
-  if (userId === "0")
-    return { success: false, message: "Error user not authenticated" };
-  if (inventoryId === null)
-    return { success: false, message: "Error inventoryId not valid" };
-  if (action < 0 || action > Object.keys(Action).length)
-    return { success: false, message: "Error action not a valid option" };
-  if (daysBorrowed <= 0)
-    return { success: false, message: "Error number of days not valid" };
-
-  const [help, setHelp] = useState(true);
-
-  const transactionMutation = api.transaction.add.useMutation();
-  const transaction: Transaction = {
-    id: "",
-    actionDate: new Date(),
-    userId: userId,
-    inventoryId: inventoryId,
-    action: action,
-  };
-
-  if (action === Action.Borrow) {
-    const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + daysBorrowed);
-    transaction.dueDate = dueDate;
-  }
-
-  transactionMutation.mutate(transaction);
-
-  if (transactionMutation.isError) {
-    logger.error(
-      `Error creating transaction (userId: ${userId}, inventoryId: ${inventoryId})`,
-      transactionMutation.error
-    );
-    return { success: false, message: "Error creating transaction" };
-  }
-
-  logger.info(
-    `Transaction Created (id: ${transactionMutation.data?.id})`,
-    transactionMutation.error
-  );
-
-  const inventoryMutation = api.inventory.update.useMutation();
-  const inventoryStatus = getStatusFromAction(action);
-
-  inventoryMutation.mutate({
-    id: inventoryId,
-    status: inventoryStatus,
+const useTransaction = () => {
+  const [data, setData] = useState<Response>({
+    success: undefined,
+    message: undefined,
   });
 
-  if (inventoryMutation.isError) {
-    logger.error(
-      `Error updating inventory status (id: ${inventoryId})`,
-      inventoryMutation.error
-    );
-    return {
-      success: false,
-      message: "Error updating inventory status",
-    };
-  }
+  const createTransactionMutation = api.transaction.add.useMutation();
+  const updateTransactionMutation = api.transaction.update.useMutation();
+  const inventoryMutation = api.inventory.update.useMutation();
 
-  return { success: true, message: "Borrow was successful" };
+  const setBorrow = (
+    inventoryId: string,
+    userId: string,
+    daysBorrowed: number
+  ) => {
+    if (userId === "0") {
+      setData({ success: false, message: "Error user not authenticated" });
+      return;
+    }
+    if (inventoryId === null) {
+      setData({ success: false, message: "Error inventoryId not valid" });
+      return;
+    }
+    if (daysBorrowed <= 0) {
+      setData({ success: false, message: "Error number of days not valid" });
+      return;
+    }
+
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + daysBorrowed);
+
+    const transaction: CreateTransaction = {
+      userId: userId,
+      inventoryId: inventoryId,
+      status: TransactionStatus.Borrowed,
+      borrowDate: new Date(),
+      dueDate: dueDate,
+    };
+
+    createTransactionMutation.mutate(transaction);
+
+    if (createTransactionMutation.isError) {
+      logger.error(
+        `Error creating transaction (userId: ${userId}, inventoryId: ${inventoryId})`,
+        createTransactionMutation.error
+      );
+      setData({ success: false, message: "Error creating transaction" });
+      return;
+    }
+
+    logger.info(
+      `Transaction Created (id: ${createTransactionMutation.data?.id})`,
+      createTransactionMutation.error
+    );
+
+    inventoryMutation.mutate({
+      id: inventoryId,
+      status: Status.Borrowed,
+    });
+
+    if (inventoryMutation.isError) {
+      logger.error(
+        `Error updating inventory status (id: ${inventoryId})`,
+        inventoryMutation.error
+      );
+      setData({ success: false, message: "Error updating inventory status" });
+      return;
+    }
+
+    setData({ success: true, message: "Borrow was successful" });
+    return;
+  };
+
+  const setNextStatus = (
+    inventoryId: string,
+    transactionId: string,
+    nextStatus: number
+  ) => {
+    if (transactionId == "0") {
+      setData({ success: false, message: "Error transactionId not valid" });
+      return;
+    }
+
+    const transaction: UpdateTransaction = {
+      id: transactionId,
+      status: nextStatus,
+    };
+
+    switch (nextStatus) {
+      case TransactionStatus.Returned:
+        transaction.returnDate = new Date();
+        break;
+      case TransactionStatus.Reviewed:
+        transaction.reviewDate = new Date();
+        break;
+      default:
+        break;
+    }
+
+    updateTransactionMutation.mutate(transaction);
+
+    if (updateTransactionMutation.isError) {
+      logger.error(
+        `Error updating transaction (id: ${transactionId})`,
+        updateTransactionMutation.error
+      );
+      setData({ success: false, message: "Error creating transaction" });
+      return;
+    }
+
+    logger.info(
+      `Transaction Updated (id: ${updateTransactionMutation.data?.id})`,
+      updateTransactionMutation.data
+    );
+
+    const inventoryStatus = getStatusFromTransactionStatus(nextStatus);
+
+    inventoryMutation.mutate({
+      id: inventoryId,
+      status: inventoryStatus,
+    });
+
+    if (inventoryMutation.isError) {
+      logger.error(
+        `Error updating inventory status (id: ${inventoryId})`,
+        inventoryMutation.error
+      );
+      setData({ success: false, message: "Error updating inventory status" });
+      return;
+    }
+
+    setData({ success: true, message: "Borrow was successful" });
+    return;
+  };
+
+  // const setStatus = (
+  //   inventoryId: string,
+  //   userId: string,
+  //   transactionId: string,
+  //   daysBorrowed: number
+  // ) => {
+  //   if (userId === "0") {
+  //     setData({ success: false, message: "Error user not authenticated" });
+  //     return;
+  //   }
+  //   if (inventoryId === null) {
+  //     setData({ success: false, message: "Error inventoryId not valid" });
+  //     return;
+  //   }
+  //   if (transactionId == "0") {
+  //     setData({ success: false, message: "Error transactionId not valid" });
+  //     return;
+  //   }
+  //   if (daysBorrowed <= 0) {
+  //     setData({ success: false, message: "Error number of days not valid" });
+  //     return;
+  //   }
+
+  //   const transaction: Transaction = {
+  //     actionDate: new Date(),
+  //     userId: userId,
+  //     inventoryId: inventoryId,
+  //     action: action,
+  //   };
+
+  //   if (action === Action.Borrow) {
+  //     const dueDate = new Date();
+  //     dueDate.setDate(dueDate.getDate() + daysBorrowed);
+  //     transaction.dueDate = dueDate;
+  //   }
+
+  //   transactionMutation.mutate(transaction);
+
+  //   if (transactionMutation.isError) {
+  //     logger.error(
+  //       `Error creating transaction (userId: ${userId}, inventoryId: ${inventoryId})`,
+  //       transactionMutation.error
+  //     );
+  //     setData({ success: false, message: "Error creating transaction" });
+  //     return;
+  //   }
+
+  //   logger.info(
+  //     `Transaction Created (id: ${transactionMutation.data?.id})`,
+  //     transactionMutation.error
+  //   );
+
+  //   const inventoryStatus = getStatusFromAction(action);
+
+  //   inventoryMutation.mutate({
+  //     id: inventoryId,
+  //     status: inventoryStatus,
+  //   });
+
+  //   if (inventoryMutation.isError) {
+  //     logger.error(
+  //       `Error updating inventory status (id: ${inventoryId})`,
+  //       inventoryMutation.error
+  //     );
+  //     setData({ success: false, message: "Error updating inventory status" });
+  //     return;
+  //   }
+
+  //   setData({ success: true, message: "Borrow was successful" });
+  //   return;
+  // };
+
+  return { data, setBorrow, setNextStatus };
 };
+
+export default useTransaction;

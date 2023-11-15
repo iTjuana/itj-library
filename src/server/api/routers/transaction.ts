@@ -5,13 +5,24 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-const transactionInput = z.object({
+const createTransactionInput = z.object({
   id: z.string().optional(),
   userId: z.string(),
   inventoryId: z.string(),
-  action: z.number(),
-  actionDate: z.date().optional(),
+  status: z.number(),
+  borrowDate: z.date().optional(),
   dueDate: z.date().optional(),
+  returnDate: z.date().optional(),
+  reviewDate: z.date().optional(),
+});
+
+const updateTransactionInput = z.object({
+  id: z.string(),
+  status: z.number().optional(),
+  borrowDate: z.date().optional(),
+  dueDate: z.date().optional(),
+  returnDate: z.date().optional(),
+  reviewDate: z.date().optional(),
 });
 
 export const transactionRouter = createTRPCRouter({
@@ -23,23 +34,53 @@ export const transactionRouter = createTRPCRouter({
       z.object({
         userId: z.string().optional(),
         inventoryId: z.string().optional(),
-        action: z.number().optional(),
-        actionDate: z.date().optional(),
+        status: z.number().optional(),
+        borrowDate: z.date().optional(),
         dueDate: z.date().optional(),
+        returnDate: z.date().optional(),
+        reviewDate: z.date().optional(),
       })
     )
     .query(({ ctx, input }) => {
-      const { userId, inventoryId, action, actionDate, dueDate } = input;
+      const {
+        userId,
+        inventoryId,
+        status,
+        borrowDate,
+        dueDate,
+        returnDate,
+        reviewDate,
+      } = input;
 
       return ctx.prisma.transaction.findMany({
         where: {
           OR: [
             { userId: userId },
             { inventoryId: inventoryId },
-            { action: action },
-            { actionDate: actionDate },
+            { status: status },
+            { borrowDate: borrowDate },
             { dueDate: dueDate },
+            { returnDate: returnDate },
+            { reviewDate: reviewDate },
           ],
+        },
+        include: {
+          inventory: {
+            select: {
+              tagId: true,
+              book: {
+                select: {
+                  title: true,
+                  isbn: true,
+                },
+              },
+            },
+          },
+          user: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
     }),
@@ -63,7 +104,7 @@ export const transactionRouter = createTRPCRouter({
     return ctx.prisma.inventory.count();
   }),
   add: publicProcedure
-    .input(transactionInput)
+    .input(createTransactionInput)
     .mutation(async ({ ctx, input }) => {
       // const { success } = await ratelimit.limit(authorId);
       // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
@@ -75,7 +116,7 @@ export const transactionRouter = createTRPCRouter({
       return post;
     }),
   update: publicProcedure
-    .input(transactionInput)
+    .input(updateTransactionInput)
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
       // const { success } = await ratelimit.limit(authorId);
