@@ -5,7 +5,7 @@ import { getUserId } from "utils/session";
 import useTransaction from "~/hooks/useTransaction";
 
 const style = {
-  position: "absolute" as "absolute",
+  position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",

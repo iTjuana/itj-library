@@ -94,7 +94,7 @@ const useTransaction = () => {
     }
 
     logger.info(
-      `Transaction Created (id: ${createTransactionMutation.data?.id})`,
+      `Transaction Created (id: ${createTransactionMutation.data?.id ?? 0})`,
       createTransactionMutation.error
     );
 
@@ -154,7 +154,7 @@ const useTransaction = () => {
     }
 
     logger.info(
-      `Transaction Updated (id: ${updateTransactionMutation.data?.id})`,
+      `Transaction Updated (id: ${updateTransactionMutation.data?.id ?? 0})`,
       updateTransactionMutation.data
     );
 
