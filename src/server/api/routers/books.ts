@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { logger } from "../../../../utils/logger";
+import { logger } from "utils/logger";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -23,14 +23,14 @@ const bookInput = z.object({
 
 export const booksRouter = createTRPCRouter({
   // Get all books
-  getBooks: publicProcedure.query(async ({ ctx }) => {
+  getBooks: publicProcedure.query(({ ctx }) => {
     try {
       // Logic to get all books
       logger.info("Getting all books...", {
         statusCode: ctx.res.statusCode,
         query: ctx.req.query,
       });
-      return await ctx.prisma.book.findMany();
+      return ctx.prisma.book.findMany();
     } catch (error) {
       logger.error("There was an error getting books", error);
     }
@@ -45,9 +45,9 @@ export const booksRouter = createTRPCRouter({
         })
         .required()
     )
-    .query(async ({ ctx, input }) => {
+    .query(({ ctx, input }) => {
       // Logic to find book by id
-      return await ctx.prisma.book.findUnique({
+      return ctx.prisma.book.findUnique({
         where: {
           id: input.id,
         },
@@ -55,34 +55,32 @@ export const booksRouter = createTRPCRouter({
     }),
 
   // Get book info for book page by id
-  getBookInfoById: publicProcedure
-    .input(z.string())
-    .query(async ({ ctx, input }) => {
-      // Logic to find book by id
-      return await ctx.prisma.book.findUnique({
-        where: {
-          id: input,
-        },
-        include: {
-          inventory: {
-            select: {
-              id: true,
-              bookId: true,
-              status: true,
-              format: true,
-              condition: true,
-            },
+  getBookInfoById: publicProcedure.input(z.string()).query(({ ctx, input }) => {
+    // Logic to find book by id
+    return ctx.prisma.book.findUnique({
+      where: {
+        id: input,
+      },
+      include: {
+        inventory: {
+          select: {
+            id: true,
+            bookId: true,
+            status: true,
+            format: true,
+            condition: true,
           },
         },
-      });
-    }),
+      },
+    });
+  }),
 
   // Get book info for book page by isbn
   getBookInfoByIsbn: publicProcedure
     .input(z.string())
-    .query(async ({ ctx, input }) => {
+    .query(({ ctx, input }) => {
       // Logic to find book by id
-      return await ctx.prisma.book.findFirst({
+      return ctx.prisma.book.findFirst({
         where: {
           isbn: input,
         },
@@ -103,8 +101,8 @@ export const booksRouter = createTRPCRouter({
   // Find books by id
   findBooksById: publicProcedure
     .input(z.array(z.string()))
-    .query(async ({ ctx, input }) => {
-      return await ctx.prisma.book.findMany({
+    .query(({ ctx, input }) => {
+      return ctx.prisma.book.findMany({
         where: {
           id: { in: input },
         },
@@ -114,9 +112,9 @@ export const booksRouter = createTRPCRouter({
   // Add Book
   addBook: publicProcedure // TODO: Change to privateProcedure?
     .input(bookInput.required())
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       // Logic to add book
-      return await ctx.prisma.book.create({ data: input });
+      return ctx.prisma.book.create({ data: input });
     }),
 
   // Update Book
@@ -129,9 +127,9 @@ export const booksRouter = createTRPCRouter({
         })
         .required()
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       // Logic to update book
-      return await ctx.prisma.book.update({
+      return ctx.prisma.book.update({
         where: {
           id: input.id,
         },
@@ -148,23 +146,14 @@ export const booksRouter = createTRPCRouter({
         })
         .required()
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       // Logic to remove book
-      return await ctx.prisma.book.delete({
+      return ctx.prisma.book.delete({
         where: {
           id: input.id,
         },
       });
     }),
-
-  // TODO: Confirm if needed
-  private: privateProcedure.query(() => {
-    return {
-      session: "Session",
-    };
-  }),
-
-  // End router
 });
 
 // export type definition of API

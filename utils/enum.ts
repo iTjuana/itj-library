@@ -30,6 +30,13 @@ export const Language = {
   Other: 3,
 };
 
+export const TransactionStatus = {
+  Borrowed: 0,
+  Returned: 1,
+  Reviewed: 2,
+  Other: 3,
+};
+
 export function enumObjToFilterItem(enumObj: any) {
   return Object.keys(enumObj).map((key, index) => {
     return {
@@ -40,5 +47,7 @@ export function enumObjToFilterItem(enumObj: any) {
 }
 
 export function getEnumKey(enumObj: any, value: number | undefined) {
-  return value !== undefined ? Object.keys(enumObj)[value] : "";
+  return value !== undefined
+    ? Object.keys(enumObj)[value]?.replaceAll("_", "-")
+    : "";
 }

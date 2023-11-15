@@ -102,9 +102,11 @@ model Transaction {
   id           String    @id @default(cuid())
   userId       String
   inventoryId  String
-  action       Int  
-  actionDate   DateTime  @default(now())
+  status       Int  
+  borrowDate   DateTime  @default(now())
   dueDate      DateTime?
+  returnDate   DateTime?
+  reviewDate   DateTime?
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   inventory    Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 

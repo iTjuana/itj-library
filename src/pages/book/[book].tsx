@@ -8,11 +8,20 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { type Book } from "@prisma/client";
 import { api } from "utils/trpc";
-import { Status, Format, Condition, Language, getEnumKey } from "utils/enum";
+import {
+  Status,
+  Format,
+  Condition,
+  Language,
+  getEnumKey,
+  TransactionStatus,
+} from "utils/enum";
+import { Borrow, Wishlist } from "~/components/transactions";
 
 interface BookInfoPageProps {
   book:
@@ -85,7 +94,15 @@ const InventoryTable = ({
                 {getEnumKey(Condition, row.condition)}
               </TableCell>
               <TableCell align="right">
-                {getEnumKey(Status, row.status)}
+                {row.status === Status.Available ? (
+                  <Borrow inventoryId={row.id} userId={row.bookId} />
+                ) : (
+                  <Wishlist
+                    inventoryId={row.id}
+                    userId={row.bookId}
+                    action={0}
+                  />
+                )}
               </TableCell>
             </TableRow>
           ))}

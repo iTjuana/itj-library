@@ -6,11 +6,96 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Link,
 } from "@mui/material";
 import { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { api } from "utils/trpc";
-import { Status } from "utils/enum";
+import { TransactionStatus, Status, getEnumKey } from "utils/enum";
+import { Transaction } from "@prisma/client";
+import { Return } from "~/components/transactions";
+
+interface ActivityProps {
+  transactions:
+    | (Transaction & {
+        inventory: {
+          book: {
+            title: string;
+            isbn: string;
+          };
+          status: number;
+        };
+      })[]
+    | undefined;
+}
+
+const Activity: React.FunctionComponent<ActivityProps> = ({ transactions }) => {
+  return (
+    <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] md:w-3/5">
+      <h3 className="text-xl font-semibold">Activity</h3>
+      {transactions && transactions.length > 0 && (
+        <TableContainer component={Paper}>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell align="right">Borrowed Date</TableCell>
+                <TableCell align="right">Due Date</TableCell>
+                <TableCell align="right">Return Date</TableCell>
+                <TableCell align="right">Review Date</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">Action</TableCell>
+                <TableCell align="right">-</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {transactions.map((transaction) => (
+                <TableRow
+                  key={transaction.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {transaction.inventory.book.title}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.borrowDate?.toLocaleDateString() ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.dueDate?.toLocaleDateString() ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.returnDate?.toLocaleDateString() ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.reviewDate?.toLocaleDateString() ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {getEnumKey(Status, transaction.inventory.status)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {getEnumKey(TransactionStatus, transaction.status)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.status === TransactionStatus.Borrowed ? (
+                      <Return
+                        inventoryId={transaction.inventoryId}
+                        transactionId={transaction.id}
+                      />
+                    ) : (
+                      <Link href={`/book/${transaction.inventory.book.isbn}`}>
+                        See Book
+                      </Link>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </div>
+  );
+};
 
 const SessionComponent = () => {
   const { data: session, status } = useSession();
@@ -21,9 +106,6 @@ const SessionComponent = () => {
   const transactions = api.users.getUserTransactionsById.useQuery({
     id: user?.id ?? "0",
   }).data;
-
-  console.log("user db", user);
-  console.log("transactions db", transactions);
 
   if (session) {
     return (
@@ -58,54 +140,7 @@ const SessionComponent = () => {
           </section>
           <button onClick={() => void signOut()}>Sign out</button>
         </div>
-        <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] md:w-3/5">
-          <h3 className="text-xl font-semibold">Activity</h3>
-          {transactions && transactions.length > 0 && (
-            <TableContainer component={Paper}>
-              <Table aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell align="right">Title</TableCell>
-                    <TableCell align="right">Borrowed Date</TableCell>
-                    <TableCell align="right">Due Date</TableCell>
-                    <TableCell align="right">Status</TableCell>
-                    <TableCell align="right">Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {transactions.map((transaction) => (
-                    <TableRow
-                      key={transaction.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell component="th" scope="row">
-                        {transaction.id}
-                      </TableCell>
-                      <TableCell align="right">
-                        {transaction.inventory.book.title}
-                      </TableCell>
-                      <TableCell align="right">
-                        {transaction.actionDate.toLocaleDateString()}
-                      </TableCell>
-                      <TableCell align="right">
-                        {transaction.dueDate?.toLocaleDateString() ?? "N/A"}
-                      </TableCell>
-                      <TableCell align="right">
-                        {transaction.inventory.status}
-                      </TableCell>
-                      <TableCell align="right">
-                        {transaction.inventory.status === 2
-                          ? "Return"
-                          : "See Book"}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </div>
+        <Activity transactions={transactions} />
       </>
     );
   }

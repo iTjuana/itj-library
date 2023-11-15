@@ -91,6 +91,7 @@ export const usersRouter = createTRPCRouter({
               book: {
                 select: {
                   title: true,
+                  isbn: true,
                 },
               },
             },
