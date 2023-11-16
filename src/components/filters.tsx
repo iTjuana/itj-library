@@ -29,7 +29,8 @@ export const Filters = (props: FiltersProps) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setFilters({ ...filters, search });
-    }, 2000);
+    }, 1000);
+    
     return () => clearTimeout(timeout);
   }, [search, filters, setFilters]);
 
