@@ -63,7 +63,7 @@ export const Filters = (props: FiltersProps) => {
         placeholder="Search for a book..."
         className="w-40"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(event) => setSearch(event.target.value)}
       />
     </>
   );
