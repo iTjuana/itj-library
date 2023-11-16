@@ -52,7 +52,7 @@ const Catalog = () => {
           <Filters filters={filters} setFilters={setFilters} />
         </div>
         <div className="flex flex-col items-center gap-5">
-          {inventoryBooks.isLoading ? (
+          {inventoryBooks.isLoading || inventoryBooks.isFetching ? (
             <CircularProgress />
           ) : !inventoryBooks.data?.length ? (
             <p>No books right now :c</p>
