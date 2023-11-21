@@ -9,8 +9,30 @@ import {
   Language,
   getEnumKey,
   TransactionStatus,
+  Role,
 } from "utils/enum";
 import { ToReviewTable } from "~/components/toReviewTable";
+import { getServerSession } from "next-auth";
+import { authOptions } from "~/server/auth";
+
+export async function getServerSideProps(context: any) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (session?.user.role !== Role.Admin) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+}
 
 type Stat = { name: string; value: number; color: string };
 

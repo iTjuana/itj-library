@@ -1,23 +1,26 @@
 import React from "react";
 import NavLink from "./navlink";
-import { useState } from "react";
-import { faBars, faX } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Modal from "@mui/material/Modal";
-import { type } from "os";
+import { Role } from "utils/enum";
+import { useSession } from "next-auth/react";
 
 type Props = {
   isOpen: boolean;
   setIsOpen?: (boolean: boolean) => void;
 };
-const pages = [
-  { name: "Home", href: "/" },
-  { name: "Catalog", href: "/catalog" },
-  { name: "Manage", href: "/manage" },
-  { name: "Account", href: "/account" },
-];
 
 const Navbar = ({ isOpen, setIsOpen }: Props) => {
+  const { data: session, status } = useSession();
+
+  const pages = [
+    { name: "Home", href: "/" },
+    { name: "Catalog", href: "/catalog" },
+    { name: "Account", href: "/account" },
+  ];
+
+  if (session?.user.role === Role.Admin) {
+    pages.push({ name: "Manage", href: "/manage" });
+  }
+
   return (
     <>
       <nav
@@ -25,11 +28,12 @@ const Navbar = ({ isOpen, setIsOpen }: Props) => {
         ${isOpen ? "pb-4  md:h-auto" : "hidden md:flex "}
            `}
       >
-        {pages.map((page) => (
-          <NavLink href={page.href} key={page.name}>
-            {page.name}
-          </NavLink>
-        ))}
+        {pages !== undefined &&
+          pages.map((page) => (
+            <NavLink href={page.href} key={page.name}>
+              {page.name}
+            </NavLink>
+          ))}
       </nav>
     </>
   );
