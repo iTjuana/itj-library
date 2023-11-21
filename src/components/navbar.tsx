@@ -28,12 +28,11 @@ const Navbar = ({ isOpen, setIsOpen }: Props) => {
         ${isOpen ? "pb-4  md:h-auto" : "hidden md:flex "}
            `}
       >
-        {pages !== undefined &&
-          pages.map((page) => (
-            <NavLink href={page.href} key={page.name}>
-              {page.name}
-            </NavLink>
-          ))}
+        {pages.map((page) => (
+          <NavLink href={page.href} key={page.name}>
+            {page.name}
+          </NavLink>
+        ))}
       </nav>
     </>
   );

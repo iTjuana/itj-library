@@ -14,8 +14,14 @@ import {
 import { ToReviewTable } from "~/components/toReviewTable";
 import { getServerSession } from "next-auth";
 import { authOptions } from "~/server/auth";
+import { GetServerSidePropsContext } from "next";
 
-export async function getServerSideProps(context: any) {
+type Context = {
+  req: GetServerSidePropsContext["req"];
+  res: GetServerSidePropsContext["res"];
+};
+
+export async function getServerSideProps(context: Context) {
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (session?.user.role !== Role.Admin) {
