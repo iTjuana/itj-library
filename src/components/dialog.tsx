@@ -131,8 +131,6 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   // Inject data to Books and Inventory
   // If bookInfo != null
   // Inject data in inventory only
-  const bookInfo = api.books.getBookInfoByIsbn.useQuery()
-  console.log(bookInfo)
 
   const onSubmit = (e: any) =>{
     e.preventDefault();
