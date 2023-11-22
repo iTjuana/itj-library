@@ -30,12 +30,12 @@ export const Filters = (props: FiltersProps) => {
     const timeout = setTimeout(() => {
       setFilters({ ...filters, search });
     }, 1000);
-    
+
     return () => clearTimeout(timeout);
   }, [search, filters, setFilters]);
 
   return (
-    <>
+    <div className="flex w-full justify-center gap-3">
       <FilterSelect
         label="Availability"
         value={filters.status}
@@ -66,6 +66,6 @@ export const Filters = (props: FiltersProps) => {
         value={search}
         onChange={(event) => setSearch(event.target.value)}
       />
-    </>
+    </div>
   );
 };
