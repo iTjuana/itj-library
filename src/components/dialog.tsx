@@ -19,6 +19,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Autocomplete from '@mui/material/Autocomplete';
 import { Format, Language, Status, Condition, enumObjToAutocompleteItem } from "utils/enum";
+import { api } from "utils/trpc";
 
 export interface AutocompleteInterface {
   value: number;
@@ -134,7 +135,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
 
   const onSubmit = (e: any) =>{
     e.preventDefault();
-    // const bookInfo = api.books.getBookInfoByIsbn.useQuery("978-8420473352"); 
+    const bookInfo = api.books.getBookInfoByIsbn.useQuery(textISBN); 
     console.log(`
     isbn: ${textISBN}
     title: ${textTitle}
