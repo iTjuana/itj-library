@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -6,8 +6,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box } from '@mui/material';
-//npm install @mui/x-date-pickers
-//npm install dayjs
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -21,63 +19,81 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { Format, Language, Status, Condition, enumObjToAutocompleteItem } from "utils/enum";
 import { api } from "utils/trpc";
 
+// Interfaces for autocomplete component, they need {value, label} format in order to work correctly
 export interface AutocompleteInterface {
   value: number;
   label: string;
 }
 
+// Options for status, format, language and condition (Autocomplete component)
+const statusOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Status);
+const formatOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Format);
+const languageOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Language);
+const conditionOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Condition);
+
+type bookStructure = {
+  isbn: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  language: number;
+  authors: string;
+  subjects: string;
+  publishDates: string;
+  publishers: string;
+  numberOfPages: number;
+  image: string;
+};
+
+type inventoryStructure = {
+  bookId: string,
+  status: number,
+  format: number,
+  condition: number,
+  bookOwner: string,
+  tagId: string,
+  ownerNote: string,
+  isDonated: boolean,
+  dateAdded: Date,
+};
+
+// Main Function (FormDialog)
 export default function FormDialog({textButton} : { textButton: string; }) {
-  const [open, setOpen] = React.useState(false);
-  const [textISBN, setTextISBN] = React.useState("");
-  const [textTitle, setTextTitle] = React.useState("");
-  const [textSubtitle, setTextSubtitle] = React.useState("");
-  const [textLanguage, setTextLanguage] = React.useState("");
-  const [textPublishDates, setTextPublishDates] = React.useState<Dayjs | null>(dayjs());
-  const [textNumberOfPages, setTextNumberOfPages] = React.useState("");
-  const [textDescription, setTextDescription] = React.useState("");
-  const [objectAuthors, setObjectAuthors] = React.useState([{ authorName: "" }]);
-  const [objectPublishers, setObjectPublishers] = React.useState([{ publisherName: "" }]);
-  const [objectSubjects, setObjectSubjects] = React.useState([{ subjectName: "" }]);
-  const [textStatus, setTextStatus] = React.useState("");
-  const [textFormat, setTextFormat] = React.useState("");
-  const [textCondition, setTextCondition] = React.useState("");
-  const [textBookOwner, setTextBookOwner] = React.useState("");
-  const [textTagID, setTextTagID] = React.useState("");
-  const [textOwnerNote, setOwnerNote] = React.useState("");
-  const [textIsDonated, setIsDonated] = React.useState("");
-  const [textDateAdded, setDateAdded] = React.useState<Dayjs | null>(dayjs());
-  const [textImage, setTextImage] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [bookData, setBookData] = useState({
+    isbn: "",
+    title: "",
+    subtitle: "",
+    description: "",
+    language: 0,
+    numberOfPages: 0,
+    image: "",
+  });
+
+  const [inventoryData, setInventoryData] = useState({
+    bookId: "",
+    status: 0,
+    format: 0,
+    condition: 0,
+    bookOwner: "",
+    tagId: "",
+    ownerNote: "",
+    isDonated: false,
+    dateAdded: new Date(),
+  });
+
+  const [textPublishDates, setTextPublishDates] = useState<Dayjs | null>(dayjs());
+  const [objectAuthors, setObjectAuthors] = useState([{ authorName: "" }]);
+  const [objectPublishers, setObjectPublishers] = useState([{ publisherName: "" }]);
+  const [objectSubjects, setObjectSubjects] = useState([{ subjectName: "" }]);
+  const [textDateAdded, setDateAdded] = useState<Dayjs | null>(dayjs());
+
+  const addthingy = api.books.addThingy.useMutation();
 
   const optionsIsDonated = [
     { label: 'Yes', value: true },
     { label: 'No', value: false },
   ];
-
-  const statusOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Status);
-  const formatOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Format);
-  const languageOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Language);
-  const conditionOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Condition);
-
-  const getInitState = () => {
-    setTextISBN("");
-    setTextTitle("");
-    setTextSubtitle("");
-    setTextLanguage("");
-    setTextPublishDates(dayjs());
-    setTextNumberOfPages("");
-    setTextDescription("");
-    setObjectAuthors([{ authorName: "" }]);
-    setObjectPublishers([{ publisherName: "" }]);
-    setObjectSubjects([{ subjectName: "" }]);
-    setTextStatus("");
-    setTextFormat("");
-    setTextCondition("");
-    setTextBookOwner("");
-    setTextTagID("");
-    setOwnerNote("");
-    setTextImage("");
-    setIsDonated("");
-  }
 
   const handleAddInputAuthor = () => {
     setObjectAuthors([...objectAuthors, { authorName: "" }]);
@@ -124,39 +140,56 @@ export default function FormDialog({textButton} : { textButton: string; }) {
 
   const handleClose = () => {
     setOpen(false);
-    getInitState();
   };
-  
-  // const bookInfo = api.books.getBookInfoByIsbn.useQuery("978-8420473352"); 
-  // If data = null 
-  // Inject data to Books and Inventory
-  // If bookInfo != null
-  // Inject data in inventory only
 
+  const objectToCommaSeparatedString = (object: any, attribute: string) => {
+    let stringCommaSeparated = "";
+    object.forEach(element => {
+      stringCommaSeparated += element[`${attribute}`] + ",";
+    });
+    stringCommaSeparated = stringCommaSeparated.slice(0, -1);
+    return stringCommaSeparated;
+  }
+  
   const onSubmit = (e: any) =>{
     e.preventDefault();
-    const bookInfo = api.books.getBookInfoByIsbn.useQuery(textISBN); 
-    console.log(`
-    isbn: ${textISBN}
-    title: ${textTitle}
-    Subtitle: ${textSubtitle}
-    Language: ${textLanguage}
-    PublishDate: ${textPublishDates}
-    Number of Pages: ${textNumberOfPages}
-    Description: ${textDescription}
-    Authors: ${objectAuthors}
-    Publishers: ${objectPublishers}
-    Subjects: ${objectSubjects}
-    status: ${textStatus}
-    format: ${textFormat}
-    condition: ${textCondition}
-    bookowner: ${textBookOwner}
-    tagid: ${textTagID}
-    ownernote: ${textOwnerNote}
-    isDonated: ${textIsDonated}
-    dateAdded: ${textDateAdded}
-    Image: ${textImage}
-    `)
+    const authorString = objectToCommaSeparatedString(objectAuthors, "authorName");
+    const publisherString = objectToCommaSeparatedString(objectPublishers, "publisherName");
+    const subjectString = objectToCommaSeparatedString(objectSubjects, "subjectName");
+
+    const bookDataPrivate: bookStructure = {
+      isbn: bookData.isbn,
+      title: bookData.title,
+      subtitle: bookData.subtitle,
+      description: bookData.description,
+      language: bookData.language,
+      authors: authorString,
+      subjects: subjectString,
+      publishDates: textPublishDates.toISOString(),
+      publishers: publisherString,
+      numberOfPages: Number(bookData.numberOfPages),
+      image: bookData.image
+    }
+
+    const InventoryDataPrivate: inventoryStructure = {
+      bookId: "",
+      status: inventoryData.status,
+      format: inventoryData.format,
+      condition: inventoryData.condition,
+      bookOwner: inventoryData.bookOwner,
+      tagId: inventoryData.tagId,
+      ownerNote: inventoryData.ownerNote,
+      isDonated: inventoryData.isDonated,
+      dateAdded: new Date(),
+    }
+
+    console.log(InventoryDataPrivate)
+    console.log(bookDataPrivate)
+    // console.log(inventoryData);
+    addthingy.mutate({
+      inventoryData: InventoryDataPrivate,
+      bookData: bookDataPrivate
+    });
   }
 
   return (
@@ -173,13 +206,13 @@ export default function FormDialog({textButton} : { textButton: string; }) {
               <Divider />
               </Grid>
               <Grid item xs={6}>
-                <TextField id="isbn" label="ISBN" variant="outlined"  value = {textISBN} onChange = {(e) => { setTextISBN(e.target.value); }} fullWidth required />
+                <TextField id="isbn" label="ISBN" variant="outlined"  value = {bookData?.isbn} onChange = {(e) => setBookData({...bookData, isbn: e.target.value}) } fullWidth required />
               </Grid>
               <Grid item xs={6}>
-                <TextField id="title" label="Title" variant="outlined" value = {textTitle} onChange = {(e) => { setTextTitle(e.target.value); }} fullWidth required />
+                <TextField id="title" label="Title" variant="outlined" value = {bookData?.title} onChange = {(e) => setBookData({...bookData, title: e.target.value}) } fullWidth required />
               </Grid>
               <Grid item xs={6}>
-                <TextField id="subtitle" label="Subtitle" variant="outlined" value = {textSubtitle} onChange = {(e) => { setTextSubtitle(e.target.value); }} fullWidth />
+                <TextField id="subtitle" label="Subtitle" variant="outlined" value = {bookData?.subtitle} onChange = {(e) => setBookData({...bookData, subtitle: e.target.value}) } fullWidth />
               </Grid>
               <Grid item xs={6}>
                 <Autocomplete
@@ -187,7 +220,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                   disablePortal
                   id="combo-box-language"
                   options={languageOptions}
-                  onChange = {(e,item) => { setTextLanguage(item?.value) }}
+                  onChange = {(e,item) => { setBookData({...bookData, language: Number(item?.value)}) }}
                   renderInput={(params) => <TextField {...params} label="Language" required/>}
                 />
               </Grid>
@@ -225,7 +258,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                 </LocalizationProvider>
               </Grid>
               <Grid item xs={6}>
-                <TextField type="number" id="numberOfPages" label="Number Of Pages" variant="outlined" value = {textNumberOfPages} onChange = {(e) => { setTextNumberOfPages(e.target.value); }} fullWidth /> 
+                <TextField type="number" id="numberOfPages" label="Number Of Pages" variant="outlined" value = { bookData?.numberOfPages } onChange = {(e) => setBookData({...bookData, numberOfPages: e.target.value}) } fullWidth /> 
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -234,7 +267,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                 multiline
                 minRows={2}
                 maxRows={3}
-                value = {textDescription} onChange = {(e) => { setTextDescription(e.target.value); }}
+                value = {bookData?.description} onChange = {(e) => setBookData({...bookData, description: e.target.value})}
                 fullWidth
                 />
               </Grid>
@@ -264,7 +297,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                   disablePortal
                   id="combo-box-status"
                   options={statusOptions}
-                  onChange = {(e,item) => { setTextStatus(item?.value) }}
+                  onChange = {(e,item) => { setInventoryData({...inventoryData, status: Number(item?.value)}) }}
                   renderInput={(params) => <TextField {...params} label="Status" required/>}
                 />
               </Grid>
@@ -274,7 +307,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                   disablePortal
                   id="combo-box-format"
                   options={formatOptions}
-                  onChange = {(e,item) => { setTextFormat(item?.value) }}
+                  onChange = {(e,item) => { setInventoryData({...inventoryData, format: Number(item?.value)}) }}
                   renderInput={(params) => <TextField {...params} label="Format" required/>}
                 />
               </Grid>
@@ -284,12 +317,12 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                   disablePortal
                   id="combo-box-condition"
                   options={conditionOptions}
-                  onChange = {(e,item) => { setTextCondition(item?.value) }}
+                  onChange = {(e,item) => { setInventoryData({...inventoryData, condition: Number(item?.value)}) }}
                   renderInput={(params) => <TextField {...params} label="Condition" required/>}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField id="isbn" label="Tag ID" variant="outlined"  value = {textTagID} onChange = {(e) => { setTextTagID(e.target.value); }} fullWidth/>
+                <TextField id="isbn" label="Tag ID" variant="outlined"  value = {inventoryData?.tagId} onChange = {(e) => setInventoryData({...inventoryData, tagId: e.target.value}) } fullWidth/>
               </Grid>
               <Grid item xs={6}>
                 <Autocomplete
@@ -297,12 +330,12 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                   disablePortal
                   id="combo-box-donated"
                   options={optionsIsDonated}
-                  onChange = {(e,item) => { setIsDonated(item?.value) }}
+                  onChange = {(e,item) => { setInventoryData({...inventoryData, isDonated: Boolean(item?.value)}) }}
                   renderInput={(params) => <TextField {...params} label="Donated" required/>}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField id="isbn" label="Book Owner" variant="outlined"  value = {textBookOwner} onChange = {(e) => { setTextBookOwner(e.target.value); }} fullWidth required/>
+                <TextField id="isbn" label="Book Owner" variant="outlined"  value = {inventoryData?.bookOwner} onChange = {(e) => { setInventoryData({...inventoryData, bookOwner: e.target.value}) }} fullWidth required/>
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -311,7 +344,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                 multiline
                 minRows={2}
                 maxRows={3}
-                value = {textOwnerNote} onChange = {(e) => { setOwnerNote(e.target.value); }}
+                value = {inventoryData?.ownerNote} onChange = {(e) => { setInventoryData({...inventoryData, ownerNote: e.target.value}) }}
                 fullWidth
                 />
               </Grid>
@@ -353,21 +386,21 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                 </>
               ))}
               <Grid item xs={12}>
-                <TextField id="image" label="Image" variant="outlined" value = {textImage} onChange = {(e) => { setTextImage(e.target.value); }} fullWidth /> {/** How do we manage images? */}
+                <TextField id="image" label="Image" variant="outlined" value = {bookData?.image} onChange = {(e) => setBookData({...bookData, image: e.target.value}) } fullWidth />
               </Grid>
               <Grid item xs={3}>
                 {/* Align Item to center */}
               </Grid>
               <Grid item xs={6}>
                 <img
-                  src={textImage}
+                  src={bookData?.image}
                   alt={""}
                   loading="lazy"
                 />
               </Grid>
               <Grid item xs={3}>
                 {/* Align Item to center */}
-              </Grid>
+              </Grid>            
             </Grid>
           </DialogContent>
         <DialogActions>

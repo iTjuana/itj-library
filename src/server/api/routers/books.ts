@@ -1,3 +1,4 @@
+import { isNumber } from "@mui/x-data-grid/internals";
 import { TRPCError } from "@trpc/server";
 import { logger } from "utils/logger";
 import { z } from "zod";
@@ -17,8 +18,21 @@ const bookInput = z.object({
   subjects: z.string(),
   publishDates: z.string(),
   publishers: z.string(),
-  number_of_pages: z.number(),
+  numberOfPages: z.number(),
   image: z.string(),
+});
+
+const bookInventory = z.object({
+  id: z.string().optional(),
+  bookId: z.string().optional(),
+  status: z.number().optional(),
+  format: z.number().optional(),
+  condition: z.number().optional(),
+  bookOwner: z.string().optional(),
+  tagId: z.string().optional(),
+  ownerNote: z.string().optional(),
+  isDonated: z.boolean().optional(),
+  dateAdded: z.date().optional(),
 });
 
 export const booksRouter = createTRPCRouter({
@@ -115,6 +129,48 @@ export const booksRouter = createTRPCRouter({
     .mutation(({ ctx, input }) => {
       // Logic to add book
       return ctx.prisma.book.create({ data: input });
+    }),
+
+  // Add Book
+  addThingy: publicProcedure // TODO: Change to privateProcedure?
+    .input(z.object({
+      inventoryData: bookInventory,
+      bookData: bookInput
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Logic to add book
+      try {
+        const exist = await ctx.prisma.book.findFirst({
+          where:{
+            isbn: input.bookData.isbn
+          },
+          select: {
+            id: true
+          },
+        })
+
+        // If exist then we need to add book on Inventory only
+        if (exist != null && exist.id != null){
+          input.inventoryData.bookId = exist.id;
+          console.log(input.inventoryData);
+          const responseInventory = await ctx.prisma.inventory.create({data: input.inventoryData});
+          console.log(responseInventory)
+          console.log('Book Added to Inventory')
+        }else{  //  If does not exist then we need to add book in Books and Inventory
+          const responseBook = await ctx.prisma.book.create({data : input.bookData});
+          console.log(responseBook);
+          const bookID = responseBook.id;
+          console.log('Book Added')
+
+          input.inventoryData.bookId = bookID;
+          const responseInventory = await ctx.prisma.inventory.create({data: input.inventoryData})
+          console.log(responseInventory)
+          console.log('Book Added to inventory')
+        }
+      } catch (error) {
+        console.log(error)
+        return(error)
+      }
     }),
 
   // Update Book
