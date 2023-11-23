@@ -116,21 +116,21 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   const handleChangeAuthor = (event: any, index: any) => {
     let authorName  = event.target.value;
     let onChangeValue = [...objectAuthors];
-    onChangeValue[index].authorName = authorName;
+    onChangeValue[index]!.authorName = authorName;
     setObjectAuthors(onChangeValue);
   };
 
   const handleChangePublisher = (event: any, index: any) => {
     let publisherName  = event.target.value;
     let onChangeValue = [...objectPublishers];
-    onChangeValue[index].publisherName = publisherName;
+    onChangeValue[index]!.publisherName = publisherName;
     setObjectPublishers(onChangeValue);
   };
 
   const handleChangeSubject = (event: any, index: any) => {
     let subjectName  = event.target.value;
     let onChangeValue = [...objectSubjects];
-    onChangeValue[index].subjectName = subjectName;
+    onChangeValue[index]!.subjectName = subjectName;
     setObjectSubjects(onChangeValue);
   };
 
@@ -144,7 +144,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
 
   const objectToCommaSeparatedString = (object: any, attribute: string) => {
     let stringCommaSeparated = "";
-    object.forEach(element => {
+    object.forEach((element: any) => {
       stringCommaSeparated += element[`${attribute}`] + ",";
     });
     stringCommaSeparated = stringCommaSeparated.slice(0, -1);
@@ -165,7 +165,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
       language: bookData.language,
       authors: authorString,
       subjects: subjectString,
-      publishDates: textPublishDates.toISOString(),
+      publishDates: textPublishDates!.toISOString(),
       publishers: publisherString,
       numberOfPages: Number(bookData.numberOfPages),
       image: bookData.image
