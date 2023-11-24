@@ -16,8 +16,11 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Autocomplete from '@mui/material/Autocomplete';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { Format, Language, Status, Condition, enumObjToAutocompleteItem } from "utils/enum";
 import { api } from "utils/trpc";
+
 
 // Interfaces for autocomplete component, they need {value, label} format in order to work correctly
 export interface AutocompleteInterface {
@@ -69,7 +72,6 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     numberOfPages: 0,
     image: "",
   });
-
   const [inventoryData, setInventoryData] = useState({
     bookId: "",
     status: 0,
@@ -81,19 +83,46 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     isDonated: false,
     dateAdded: new Date(),
   });
-
   const [textPublishDates, setTextPublishDates] = useState<Dayjs | null>(dayjs());
   const [objectAuthors, setObjectAuthors] = useState([{ authorName: "" }]);
   const [objectPublishers, setObjectPublishers] = useState([{ publisherName: "" }]);
   const [objectSubjects, setObjectSubjects] = useState([{ subjectName: "" }]);
   const [textDateAdded, setDateAdded] = useState<Dayjs | null>(dayjs());
 
-  const addthingy = api.books.addThingy.useMutation();
+  const addBook = api.books.addBook.useMutation();
 
   const optionsIsDonated = [
     { label: 'Yes', value: true },
     { label: 'No', value: false },
   ];
+
+  const getInitState = () => {
+    setBookData({
+      isbn: "",
+      title: "",
+      subtitle: "",
+      description: "",
+      language: 0,
+      numberOfPages: 0,
+      image: "",
+    });
+    setInventoryData({
+      bookId: "",
+      status: 0,
+      format: 0,
+      condition: 0,
+      bookOwner: "",
+      tagId: "",
+      ownerNote: "",
+      isDonated: false,
+      dateAdded: new Date(),
+    });
+    setTextPublishDates(dayjs());
+    setObjectAuthors([{ authorName: "" }]);
+    setObjectPublishers([{ publisherName: "" }]);
+    setObjectSubjects([{ subjectName: "" }]);
+    setDateAdded(dayjs());
+  }
 
   const handleAddInputAuthor = () => {
     setObjectAuthors([...objectAuthors, { authorName: "" }]);
@@ -140,6 +169,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
 
   const handleClose = () => {
     setOpen(false);
+    getInitState();
   };
 
   const objectToCommaSeparatedString = (object: any, attribute: string) => {
@@ -151,7 +181,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     return stringCommaSeparated;
   }
   
-  const onSubmit = (e: any) =>{
+  const onSubmit = async (e: any) =>{
     e.preventDefault();
     const authorString = objectToCommaSeparatedString(objectAuthors, "authorName");
     const publisherString = objectToCommaSeparatedString(objectPublishers, "publisherName");
@@ -172,7 +202,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     }
 
     const InventoryDataPrivate: inventoryStructure = {
-      bookId: "",
+      bookId: "", // This data it
       status: inventoryData.status,
       format: inventoryData.format,
       condition: inventoryData.condition,
@@ -183,13 +213,16 @@ export default function FormDialog({textButton} : { textButton: string; }) {
       dateAdded: new Date(),
     }
 
-    console.log(InventoryDataPrivate)
-    console.log(bookDataPrivate)
-    // console.log(inventoryData);
-    addthingy.mutate({
+    const response: any = addBook.mutate({
       inventoryData: InventoryDataPrivate,
       bookData: bookDataPrivate
-    });
+    })
+    console.log(response)
+    // if(response['type'] === 'success'){
+    //   alert(response['message']) // TODO: MAKE A MATERIAL UI ALERT SUCCESS
+    // }else{
+    //   alert(response['message']) // TODO: MAKE A MATERIAL UI ALERT ERROR
+    // }
   }
 
   return (
