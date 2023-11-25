@@ -7,8 +7,7 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { Prisma } from '@prisma/client'
-
+import { Prisma } from '@prisma/client';
 
 const bookInput = z.object({
   isbn: z.string(),
@@ -37,8 +36,8 @@ const bookInventory = z.object({
   dateAdded: z.date().optional(),
 });
 
-type responseBlock = {
-  type: string,
+type responseStructure = {
+  success: boolean,
   message: string,
 }
 
@@ -137,12 +136,6 @@ export const booksRouter = createTRPCRouter({
       bookData: bookInput
     }))
     .mutation(async ({ ctx, input }) => {
-
-      let responseReturn : responseBlock = {
-        type: "",
-        message: "",
-      };
-
       try {
         const exist = await ctx.prisma.book.findFirst({
           where:{
@@ -153,28 +146,32 @@ export const booksRouter = createTRPCRouter({
           },
         });
 
-        // If exist then we need to add book on Inventory only
+        // If exist then we need to add book on Inventory table only
         if (exist != null && exist.id != null){
           input.inventoryData.bookId = exist.id;
           const responseInventory = await ctx.prisma.inventory.create({
             data: input.inventoryData
           });
-          logger.info('Book exist, data added to Inventory');
+          console.log('Book exist, data added to Inventory');
+          // console.log(responseInventory); // Enable for debug
         }
-        else{  //  If does not exist then we need to add book in Books and Inventory
-          const responseBook = await ctx.prisma.book.create({data : input.bookData});
+        else{  //  If does not exist then we need to add book in Books and Inventory tables
+          const responseBook = await ctx.prisma.book.create({
+            data : input.bookData
+          });
           const bookID = responseBook.id;
           input.inventoryData.bookId = bookID;
           const responseInventory = await ctx.prisma.inventory.create({
             data: input.inventoryData
           });
-          logger.info('Book does not exist, data added to Inventory and Book');
+          console.log('Book does not exist, data added to Inventory and Book');
+          // console.log(responseBook); // Enable for debug
+          // console.log(responseInventory); // Enable for debug
         }
-        responseReturn = {
-          type: "success",
+        return<responseStructure>{
+          success: true,
           message: `${input.bookData.title} added successfully`
         }
-        return responseReturn;
       } 
       catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -183,13 +180,15 @@ export const booksRouter = createTRPCRouter({
             e instanceof Prisma.PrismaClientInitializationError ||
             e instanceof Prisma.PrismaClientUnknownRequestError) {
           logger.error("There was an error adding books", e);
-          responseReturn = {
-            type: "failure",
-            message: `${e.message}`
+          return<responseStructure>{
+            success: false,
+            message: `There was an error: ${e.message}`
           }
-          return responseReturn;
         }
-        logger.error("Unknown error", e);
+        return<responseStructure>{
+          success: false,
+          message: `There was an error: ${e}`
+        }
         throw e;
       }
     }),

@@ -26,13 +26,19 @@ import { api } from "utils/trpc";
 export interface AutocompleteInterface {
   value: number;
   label: string;
-}
+};
+
 
 // Options for status, format, language and condition (Autocomplete component)
 const statusOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Status);
 const formatOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Format);
 const languageOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Language);
 const conditionOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Condition);
+
+type responseStructure = {
+  success: boolean,
+  message: string,
+}
 
 type bookStructure = {
   isbn: string;
@@ -60,6 +66,11 @@ type inventoryStructure = {
   dateAdded: Date,
 };
 
+const optionsIsDonated = [
+  { label: 'Yes', value: true },
+  { label: 'No', value: false },
+];
+
 // Main Function (FormDialog)
 export default function FormDialog({textButton} : { textButton: string; }) {
   const [open, setOpen] = useState(false);
@@ -72,6 +83,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     numberOfPages: 0,
     image: "",
   });
+
   const [inventoryData, setInventoryData] = useState({
     bookId: "",
     status: 0,
@@ -83,18 +95,18 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     isDonated: false,
     dateAdded: new Date(),
   });
+  
   const [textPublishDates, setTextPublishDates] = useState<Dayjs | null>(dayjs());
   const [objectAuthors, setObjectAuthors] = useState([{ authorName: "" }]);
   const [objectPublishers, setObjectPublishers] = useState([{ publisherName: "" }]);
   const [objectSubjects, setObjectSubjects] = useState([{ subjectName: "" }]);
   const [textDateAdded, setDateAdded] = useState<Dayjs | null>(dayjs());
+  const [alertData, setAlertData] = useState({
+    type: '',
+    message: ''
+  });
 
   const addBook = api.books.addBook.useMutation();
-
-  const optionsIsDonated = [
-    { label: 'Yes', value: true },
-    { label: 'No', value: false },
-  ];
 
   const getInitState = () => {
     setBookData({
@@ -170,6 +182,10 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   const handleClose = () => {
     setOpen(false);
     getInitState();
+    setAlertData({
+      type: '',
+      message: ''
+    });
   };
 
   const objectToCommaSeparatedString = (object: any, attribute: string) => {
@@ -180,6 +196,25 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     stringCommaSeparated = stringCommaSeparated.slice(0, -1);
     return stringCommaSeparated;
   }
+
+  function ShowAlert(){
+    if (alertData.type == 'success') {
+      return <Alert severity="success">
+                <AlertTitle>Success</AlertTitle>
+                {alertData.message}
+              </Alert>;
+    }
+    else if(alertData.type == 'failure'){
+      return <Alert severity="error">
+        <AlertTitle>Error</AlertTitle>
+        {alertData.message}
+      </Alert>
+    }
+    else{
+      return <></>;
+    }
+  }
+  
   
   const onSubmit = async (e: any) =>{
     e.preventDefault();
@@ -202,7 +237,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     }
 
     const InventoryDataPrivate: inventoryStructure = {
-      bookId: "", // This data it
+      bookId: "", // This data will be added once we add the book
       status: inventoryData.status,
       format: inventoryData.format,
       condition: inventoryData.condition,
@@ -213,16 +248,23 @@ export default function FormDialog({textButton} : { textButton: string; }) {
       dateAdded: new Date(),
     }
 
-    const response: any = addBook.mutate({
+    const response: responseStructure = await addBook.mutateAsync({
       inventoryData: InventoryDataPrivate,
       bookData: bookDataPrivate
     })
-    console.log(response)
-    // if(response['type'] === 'success'){
-    //   alert(response['message']) // TODO: MAKE A MATERIAL UI ALERT SUCCESS
-    // }else{
-    //   alert(response['message']) // TODO: MAKE A MATERIAL UI ALERT ERROR
-    // }
+    
+    if(response.success == true){
+      setAlertData({
+        type: 'success',
+        message: response.message
+      })
+      getInitState();
+    }else{
+      setAlertData({
+        type: 'failure',
+        message: response.message
+      })
+    }
   }
 
   return (
@@ -236,6 +278,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
           <DialogContent>
             <Grid container spacing={2}>
             <Grid item xs={12}>
+            <ShowAlert/>
               <Divider />
               </Grid>
               <Grid item xs={6}>
