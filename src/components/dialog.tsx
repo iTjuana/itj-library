@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -26,7 +26,7 @@ import { api } from "utils/trpc";
 export interface AutocompleteInterface {
   value: number;
   label: string;
-};
+}
 
 // Options for status, format, language and condition (Autocomplete component)
 const statusOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Status);
@@ -147,29 +147,41 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     setObjectSubjects([...objectSubjects, { subjectName: "" }]);
   };
 
-  const handleDeleteInput = (index: any, setInputs: any, state: any) => {
-    const newArray = [...state];
-    newArray.splice(index, 1);
-    setInputs(newArray);
+  const handleDeleteInputAuthor = (index: number) => {
+    const newArrayObjects = [...objectAuthors];
+    newArrayObjects.splice(index, 1);
+    setObjectAuthors(newArrayObjects);
   };
 
-  const handleChangeAuthor = (event: any, index: any) => {
-    let authorName  = event.target.value;
-    let onChangeValue = [...objectAuthors];
+  const handleDeleteInputPublisher = (index: number) => {
+    const newArrayObjects = [...objectPublishers];
+    newArrayObjects.splice(index, 1);
+    setObjectPublishers(newArrayObjects);
+  };
+
+  const handleDeleteInputSubject= (index: number) => {
+    const newArrayObjects = [...objectSubjects];
+    newArrayObjects.splice(index, 1);
+    setObjectSubjects(newArrayObjects);
+  };
+
+  const handleChangeAuthor = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const authorName  = event.target.value;
+    const onChangeValue = [...objectAuthors];
     onChangeValue[index]!.authorName = authorName;
     setObjectAuthors(onChangeValue);
   };
 
-  const handleChangePublisher = (event: any, index: any) => {
-    let publisherName  = event.target.value;
-    let onChangeValue = [...objectPublishers];
+  const handleChangePublisher = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const publisherName  = event.target.value;
+    const onChangeValue = [...objectPublishers];
     onChangeValue[index]!.publisherName = publisherName;
     setObjectPublishers(onChangeValue);
   };
 
-  const handleChangeSubject = (event: any, index: any) => {
-    let subjectName  = event.target.value;
-    let onChangeValue = [...objectSubjects];
+  const handleChangeSubject = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const subjectName  = event.target.value;
+    const onChangeValue = [...objectSubjects];
     onChangeValue[index]!.subjectName = subjectName;
     setObjectSubjects(onChangeValue);
   };
@@ -187,14 +199,14 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     });
   };
 
-  const objectToCommaSeparatedString = (object: any, attribute: string) => {
-    let stringCommaSeparated = "";
-    object.forEach((element: any) => {
-      stringCommaSeparated += element[`${attribute}`] + ",";
-    });
-    stringCommaSeparated = stringCommaSeparated.slice(0, -1);
-    return stringCommaSeparated;
-  }
+  // const objectToCommaSeparatedString = (object: object[], attribute: string) => {
+  //   let stringCommaSeparated = "";
+  //   object.forEach((element: any) => {
+  //     stringCommaSeparated += element[`${attribute}`] as string + ",";
+  //   });
+  //   stringCommaSeparated = stringCommaSeparated.slice(0, -1);
+  //   return stringCommaSeparated;
+  // }
 
   function ShowAlert(){
     if (alertData.type == 'success') {
@@ -215,11 +227,11 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   }
   
   
-  const onSubmit = async (e: any) =>{
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) =>{
     e.preventDefault();
-    const authorString = objectToCommaSeparatedString(objectAuthors, "authorName");
-    const publisherString = objectToCommaSeparatedString(objectPublishers, "publisherName");
-    const subjectString = objectToCommaSeparatedString(objectSubjects, "subjectName");
+    const authorString = objectAuthors.map(s => s.authorName).toString();
+    const publisherString = objectPublishers.map(s => s.publisherName).toString();
+    const subjectString = objectSubjects.map(s => s.subjectName).toString();
 
     const bookDataPrivate: bookStructure = {
       isbn: bookData.isbn,
@@ -246,7 +258,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
       isDonated: inventoryData.isDonated,
       dateAdded: new Date(),
     }
-
+    
     const response: responseStructure = await addBook.mutateAsync({
       inventoryData: InventoryDataPrivate,
       bookData: bookDataPrivate
@@ -272,7 +284,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
         {textButton}
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <Box component="form" autoComplete="off" onSubmit={onSubmit}>
+        <Box component="form" autoComplete="off" onSubmit={ (e) => void onSubmit(e)}>
           <DialogTitle sx={{ fontWeight: 'bold' }}>{textButton} Book</DialogTitle>
           <DialogContent>
             <Grid container spacing={2}>
@@ -307,7 +319,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                   </Grid>
                   <Grid item xs={6}>
                     {objectAuthors.length > 1 && (
-                      <IconButton aria-label="Delete Author" onClick={() => handleDeleteInput(index, setObjectAuthors, objectAuthors)}>
+                      <IconButton aria-label="Delete Author" onClick={() => handleDeleteInputAuthor(index)}>
                           <DeleteIcon/>
                       </IconButton>
                     )}
@@ -354,7 +366,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                   </Grid>
                   <Grid item xs={6}>
                     {objectPublishers.length > 1 && (
-                      <IconButton aria-label="Delete Publisher" onClick={() => handleDeleteInput(index, setObjectPublishers, objectPublishers)}>
+                      <IconButton aria-label="Delete Publisher" onClick={() => handleDeleteInputPublisher(index)}>
                           <DeleteIcon/>
                       </IconButton>
                     )}
@@ -448,7 +460,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
                   </Grid>
                   <Grid item xs={6}>
                     {objectSubjects.length > 1 && (
-                      <IconButton aria-label="Delete Subject" onClick={() => handleDeleteInput(index, setObjectSubjects, objectSubjects)}>
+                      <IconButton aria-label="Delete Subject" onClick={() => handleDeleteInputSubject(index)}>
                           <DeleteIcon/>
                       </IconButton>
                     )}
