@@ -1,81 +1,111 @@
-import { Button } from "~/components/button";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import {
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Link,
+} from "@mui/material";
+import { useState } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { api } from "utils/trpc";
+import { TransactionStatus, Status, getEnumKey } from "utils/enum";
+import { Transaction } from "@prisma/client";
+import { Return } from "~/components/transactions";
 
-type User = { name: string; company: string; email: string; phone: string };
-type BookActivity = {
-  id: string;
-  title: string;
-  dueDate: string;
-  status: string;
-};
-interface UserActivity {
-  activity: BookActivity[];
+interface ActivityProps {
+  transactions:
+    | (Transaction & {
+        inventory: {
+          book: {
+            title: string;
+            isbn: string;
+          };
+          status: number;
+        };
+      })[]
+    | undefined;
 }
 
-type Row = {
-  data: string[];
-};
-
-interface TableProps {
-  id?: string;
-  header: string[];
-  rows: Row[];
-}
-
-const Table: React.FunctionComponent<TableProps> = ({ id, header, rows }) => {
+const Activity: React.FunctionComponent<ActivityProps> = ({ transactions }) => {
   return (
-    <>
-      <table id={id} className="w-full font-normal text-[#556581]">
-        <thead>
-          <tr className="text-black">
-            {header.map((title) => (
-              <th key={title} className="font-normal">
-                {title}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              {row.data.map((data, index) =>
-                index !== 4 ? (
-                  <td key={data}>{data}</td>
-                ) : (
-                  <td key={data}>
-                    <Button
-                      onClick={() =>
-                        console.log(
-                          "This should open a modal to change user info"
-                        )
-                      }
-                      isSecondary={data === "See Book"}
-                    >
-                      {data}
-                    </Button>
-                  </td>
-                )
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
+    <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] md:w-3/5">
+      <h3 className="text-xl font-semibold">Activity</h3>
+      {transactions && transactions.length > 0 && (
+        <TableContainer component={Paper}>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell align="right">Borrowed Date</TableCell>
+                <TableCell align="right">Due Date</TableCell>
+                <TableCell align="right">Return Date</TableCell>
+                <TableCell align="right">Review Date</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">Action</TableCell>
+                <TableCell align="right">-</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {transactions.map((transaction) => (
+                <TableRow
+                  key={transaction.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {transaction.inventory.book.title}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.borrowDate?.toLocaleDateString() ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.dueDate?.toLocaleDateString() ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.returnDate?.toLocaleDateString() ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.reviewDate?.toLocaleDateString() ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {getEnumKey(Status, transaction.inventory.status)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {getEnumKey(TransactionStatus, transaction.status)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.status === TransactionStatus.Borrowed ? (
+                      <Return
+                        inventoryId={transaction.inventoryId}
+                        transactionId={transaction.id}
+                      />
+                    ) : (
+                      <Link href={`/book/${transaction.inventory.book.isbn}`}>
+                        See Book
+                      </Link>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </div>
   );
 };
 
 const SessionComponent = () => {
   const { data: session, status } = useSession();
 
-  const headers = ["ID", "Title", "Due Date", "Status", "Action"];
-  const rows = [
-    { data: ["001", "book", "7 June 2023", "Borrowed", "Return"] },
-    { data: ["002", "book", "7 June 2023", "Returned", "See Book"] },
-    { data: ["003", "book", "7 June 2023", "Borrowed", "Return"] },
-    { data: ["004", "book", "7 June 2023", "Borrowed", "Return"] },
-    { data: ["005", "book", "7 June 2023", "Borrowed", "Return"] },
-    { data: ["006", "book", "7 June 2023", "Borrowed", "Return"] },
-  ] as Row[];
+  const user = api.users.findUserByEmail.useQuery({
+    email: session?.user.email ?? "0",
+  }).data;
+  const transactions = api.users.getUserTransactionsById.useQuery({
+    id: user?.id ?? "0",
+  }).data;
 
   if (session) {
     return (
@@ -108,18 +138,7 @@ const SessionComponent = () => {
               </div>
             )} */}
           </section>
-          <Button
-            icon={faPenToSquare}
-            onClick={() =>
-              console.log("This should open a modal to change user info")
-            }
-          >
-            Edit general information
-          </Button>
-        </div>
-        <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] sm:w-1/3">
-          <h3 className="text-xl font-semibold">Activity</h3>
-          <Table header={headers} rows={rows}></Table>
+          <button onClick={() => void signOut()}>Sign out</button>
         </div>
         <Activity transactions={transactions} />
       </>
