@@ -152,7 +152,6 @@ export const booksRouter = createTRPCRouter({
             data: input.inventoryData
           });
           console.log('Book exist, data added to Inventory');
-          // console.log(responseInventory); // Enable for debug
         }
         else{  //  If does not exist then we need to add book in Books and Inventory tables
           const responseBook = await ctx.prisma.book.create({
@@ -164,8 +163,6 @@ export const booksRouter = createTRPCRouter({
             data: input.inventoryData
           });
           console.log('Book does not exist, data added to Inventory and Book');
-          // console.log(responseBook); // Enable for debug
-          // console.log(responseInventory); // Enable for debug
         }
         return<responseStructure>{
           success: true,
