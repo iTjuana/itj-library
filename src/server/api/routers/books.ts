@@ -181,9 +181,10 @@ export const booksRouter = createTRPCRouter({
             message: `There was an error: ${e.message}`
           }
         }
+        // (Need to plan with the team how to error handling)
         return<responseStructure>{
           success: false,
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions (Need to plan with the team how to error handling)
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           message: `There was an error: ${e}`
         }
         throw e;
