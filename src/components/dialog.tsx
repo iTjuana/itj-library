@@ -80,7 +80,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     subtitle: "",
     description: "",
     language: 0,
-    numberOfPages: 0,
+    numberOfPages: "0",
     image: "",
   });
 
@@ -115,7 +115,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
       subtitle: "",
       description: "",
       language: 0,
-      numberOfPages: 0,
+      numberOfPages: "0",
       image: "",
     });
     setInventoryData({
