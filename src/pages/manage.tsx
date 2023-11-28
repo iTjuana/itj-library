@@ -1,51 +1,45 @@
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import Button from "@mui/material/Button";
-import { CircularProgress } from "@mui/material";
-import { api } from "utils/trpc";
-import Dialog from 'src/components/dialog';
-import {
-  Status,
-  Format,
-  Condition,
-  Language,
-  getEnumKey,
-  TransactionStatus,
-} from "utils/enum";
-import { ToReviewTable } from "~/components/toReviewTable";
+import { Button } from "~/components/button";
+import { DropdownMenu, type Option } from "~/components/dropdown";
+import { Input } from "~/components/input";
+import { Table, type Row } from "~/components/table";
 
 type Stat = { name: string; value: number; color: string };
 
-const Manage = () => {
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 225 },
-    { field: "title", headerName: "Title", width: 275 },
-    { field: "status", headerName: "Status", width: 90 },
-    { field: "format", headerName: "Format", width: 90 },
-    { field: "language", headerName: "Language", width: 90 },
-  ];
+interface DashboardProps {
+  stats: Stat[];
+}
 
-  const userCount = api.users.getUserCount.useQuery();
-  const inventory = api.inventory.getFullInventory.useQuery();
-  const transactions = api.transaction.getByFilter.useQuery({
-    status: TransactionStatus.Returned,
-  });
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export const getServerSideProps: GetServerSideProps<any> = async () => {
+  // here you should get the books from the database
+  // dummy stats
+  const stats = (await Promise.resolve([
+    { name: "Active Users", value: 256, color: "#088484" },
+    { name: "Total Books", value: 128, color: "#4DBCA1" },
+    { name: "Available Books", value: 64, color: "#FFAE26" },
+    { name: "Borrowed Books", value: 64, color: "#F45758" },
+  ])) as Stat[];
 
-  const stats = [
-    { name: "Active Users", value: userCount.data, color: "#088484" },
-    { name: "Total Books", value: inventory.data?.length, color: "#4DBCA1" },
-    {
-      name: "Available Books",
-      value: inventory.data?.filter((book) => book.status === Status.Available)
-        .length,
-      color: "#FFAE26",
-    },
-    {
-      name: "Borrowed Books",
-      value: inventory.data?.filter((book) => book.status === Status.Borrowed)
-        .length,
-      color: "#F45758",
-    },
-  ];
+  return { props: { stats } };
+};
+
+const Manage = ({ stats }: DashboardProps) => {
+  const options = [
+    { text: "ID", value: "ID" },
+    { text: "Title", value: "Title" },
+    { text: "Donor", value: "Donor" },
+  ] as Option[];
+
+  const headers = ["ID", "Title", "Status", "Format", "Language"];
+  const rows = [
+    { data: ["001", "book", "borrowed", "paperback", "english"] },
+    { data: ["002", "book", "borrowed", "paperback", "english"] },
+    { data: ["003", "book", "borrowed", "paperback", "english"] },
+    { data: ["004", "book", "borrowed", "paperback", "english"] },
+    { data: ["005", "book", "borrowed", "paperback", "english"] },
+    { data: ["006", "book", "borrowed", "paperback", "english"] },
+  ] as Row[];
 
   return (
     <>
@@ -77,46 +71,19 @@ const Manage = () => {
           <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">Inventory</h3>
             <div className="flex gap-2.5 px-8">
+              <p>Search by:</p>
+              <DropdownMenu options={options} placeholder="ID, Title..." />
+              <Input
+                id="filter-id"
+                name="filter"
+                placeholder="Title, Author or Keyword..."
+              />
               <Button onClick={() => console.log("edit")}>Edit</Button>
               <Button onClick={() => console.log("delete")}>Delete</Button>
               <Dialog textButton='Add'></Dialog>
             </div>
-            {inventory.isLoading ? (
-              <CircularProgress />
-            ) : !inventory.data?.length ? (
-              <p>No books right now :c</p>
-            ) : (
-              <DataGrid
-                rows={inventory.data.map((book) => ({
-                  id: book.id,
-                  status: getEnumKey(Status, book.status),
-                  format: getEnumKey(Format, book.format),
-                  language: getEnumKey(Language, book.book.language),
-                  title: book.book.title,
-                }))}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
-                  },
-                }}
-                pageSizeOptions={[5, 10]}
-                checkboxSelection
-              />
-            )}
-          </div>
-        </section>
-        {/* To Review */}
-        <section className="flex max-w-7xl flex-col items-center gap-4">
-          <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
-            <h3 className="text-2xl font-medium text-[#323232]">To Review</h3>
-            {transactions.isLoading ? (
-              <CircularProgress />
-            ) : !transactions.data?.length ? (
-              <p>No books to Review</p>
-            ) : (
-              <ToReviewTable transactions={transactions.data} />
-            )}
+            {/* Data Table */}
+            <Table header={headers} rows={rows} />
           </div>
         </section>
       </main>

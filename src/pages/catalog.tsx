@@ -1,78 +1,66 @@
-import { SimpleBook } from "~/components/book";
-import { api } from "utils/trpc";
-import { CircularProgress, Pagination } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
-import { type Inventory } from "@prisma/client";
-import { Filters } from "~/components/filters";
+import { type GetServerSideProps } from "next";
+import {
+  type BookResponse,
+  type BooksProps,
+  SimpleBook,
+} from "~/components/book";
 
-interface Filters {
-  limit?: number;
-  status?: number;
-  format?: number;
-  language?: number;
-  search?: string;
-  page: number;
-}
+const isObjectEmpty = (object: object) => {
+  return Object.keys(object).length === 0 && object.constructor === Object;
+};
 
-const Catalog = () => {
-  const searchParams = useSearchParams();
-  const limit = 9;
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export const getServerSideProps: GetServerSideProps<BooksProps> = async () => {
+  // here you should get the books from the database
+  // dummy catalog
+  const isbns = [
+    "8420473359",
+    "4087603512",
+    "9780982788097",
+    "9781787533202",
+    "613997026",
+    "9788418933011",
+    "2080701975",
+    "9780719048746",
+    "9780446405560",
+    "2081427117",
+    "9789123649709",
+    "9100579319",
+    "9789123649709",
+    "9780156012072",
+  ];
 
-  const [filters, setFilters] = useState<Filters>({
-    status: undefined,
-    format: undefined,
-    language: undefined,
-    search: undefined,
-    limit,
-    page: 1,
-  });
+  const books = await Promise.all(
+    isbns.map(async (isbn) => {
+      const res = (await (
+        await fetch(
+          `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`
+        )
+      ).json()) as BookResponse;
 
-  const inventory = api.inventory.getByFilter.useQuery(filters).data ?? [];
-  const inventoryBooks = api.books.findBooksById.useQuery(
-    inventory?.map((book: Inventory) => book.bookId)
+      if (isObjectEmpty(res) || (Array.isArray(res) && !res.length))
+        return null;
+
+      const key: string = Object.keys(res)[0] || "";
+
+      // Got lint fix from: https://stackoverflow.com/questions/57086672/element-implicitly-has-an-any-type-because-expression-of-type-string-cant-b
+      return res[key as keyof typeof res];
+    })
   );
-  const count: number | undefined = api.inventory.count.useQuery().data ?? 0;
 
-  useEffect(() => {
-    if (searchParams.has("page")) {
-      setFilters({
-        ...filters,
-        page: parseInt(searchParams.get("page") ?? "1"),
-      });
-    }
-  }, [searchParams, filters]);
+  return { props: { books } };
+};
 
+const Catalog = ({ books }: BooksProps) => {
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
         <h1 className="text-4xl font-medium text-[#1C325F]">Catalog</h1>
-        <div className="flex w-full justify-center gap-3">
-          <Filters filters={filters} setFilters={setFilters} />
-        </div>
-        <div className="flex flex-col items-center gap-5">
-          {inventoryBooks.isLoading ? (
-            <CircularProgress />
-          ) : !inventoryBooks.data?.length ? (
-            <p>No books right now :c</p>
-          ) : (
-            <>
-              <div className="flex flex-wrap justify-center gap-3 sm:w-5/6">
-                {inventoryBooks.data?.map((book) => (
-                  <SimpleBook book={book} key={book?.id} />
-                ))}
-              </div>
-              <Pagination
-                count={Math.ceil((count ?? limit) / limit)}
-                size="large"
-                page={filters.page}
-                onChange={(e, val) => {
-                  setFilters({ ...filters, page: val });
-                }}
-              />
-            </>
-          )}
+        <div className="flex flex-wrap justify-center gap-3 sm:w-5/6">
+          {books.map((book) => (
+            <SimpleBook book={book} key={book?.key} />
+          ))}
         </div>
       </main>
     </>
