@@ -28,7 +28,6 @@ export interface AutocompleteInterface {
   label: string;
 };
 
-
 // Options for status, format, language and condition (Autocomplete component)
 const statusOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Status);
 const formatOptions: AutocompleteInterface[] = enumObjToAutocompleteItem(Format);

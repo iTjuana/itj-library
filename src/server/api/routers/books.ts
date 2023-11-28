@@ -11,28 +11,28 @@ import { Prisma } from '@prisma/client';
 const bookInput = z.object({
   isbn: z.string(),
   title: z.string(),
-  subtitle: z.string(),
-  description: z.string(),
+  subtitle: z.string().optional(),
+  description: z.string().optional(),
   language: z.number(),
-  authors: z.string(),
-  subjects: z.string(),
-  publishDates: z.string(),
-  publishers: z.string(),
-  numberOfPages: z.number(),
-  image: z.string(),
+  authors: z.string().optional(),
+  subjects: z.string().optional(),
+  publishDates: z.string().optional(),
+  publishers: z.string().optional(),
+  numberOfPages: z.number().optional(),
+  image: z.string().optional(),
 });
 
 const bookInventory = z.object({
   id: z.string().optional(),
-  bookId: z.string().optional(),
-  status: z.number().optional(),
-  format: z.number().optional(),
-  condition: z.number().optional(),
-  bookOwner: z.string().optional(),
+  bookId: z.string(),
+  status: z.number(),
+  format: z.number(),
+  condition: z.number(),
+  bookOwner: z.string(),
   tagId: z.string().optional(),
   ownerNote: z.string().optional(),
-  isDonated: z.boolean().optional(),
-  dateAdded: z.date().optional(),
+  isDonated: z.boolean(),
+  dateAdded: z.date(),
 });
 
 type responseStructure = {
@@ -157,7 +157,7 @@ export const booksRouter = createTRPCRouter({
           const responseBook = await ctx.prisma.book.create({
             data : input.bookData
           });
-          const bookID = responseBook.id;
+          const bookID: string = responseBook.id;
           input.inventoryData.bookId = bookID;
           const responseInventory = await ctx.prisma.inventory.create({
             data: input.inventoryData
