@@ -46,34 +46,36 @@ const Catalog = () => {
 
   return (
     <>
-      <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
+      <main className="flex h-full w-full flex-col items-center gap-5 bg-[#F7F8FC] px-4 pb-2 pt-5">
         <h1 className="text-4xl font-medium text-[#1C325F]">Catalog</h1>
-        <div className="flex w-full justify-center gap-3">
-          <Filters filters={filters} setFilters={setFilters} />
-        </div>
-        <div className="flex flex-col items-center gap-5">
-          {inventoryBooks.isLoading ? (
+
+        <Filters filters={filters} setFilters={setFilters} />
+
+        {inventoryBooks.isLoading || inventoryBooks.isFetching ? (
+          <div className="flex h-full w-full items-center justify-center justify-center">
             <CircularProgress />
-          ) : !inventoryBooks.data?.length ? (
-            <p>No books right now :c</p>
-          ) : (
-            <>
-              <div className="flex flex-wrap justify-center gap-3 sm:w-5/6">
-                {inventoryBooks.data?.map((book) => (
-                  <SimpleBook book={book} key={book?.id} />
-                ))}
-              </div>
-              <Pagination
-                count={Math.ceil((count ?? limit) / limit)}
-                size="large"
-                page={filters.page}
-                onChange={(e, val) => {
-                  setFilters({ ...filters, page: val });
-                }}
-              />
-            </>
-          )}
-        </div>
+          </div>
+        ) : !inventoryBooks.data?.length ? (
+          <p>No books right now :c</p>
+        ) : (
+          <div className="flex w-full flex-col items-center justify-center gap-2">
+            <div className="flex w-full flex-wrap items-center justify-center gap-2">
+              {inventoryBooks.data?.map((book) => (
+                <div className="w-full px-4 lg:w-1/4 xl:w-1/5" key={book?.id}>
+                  <SimpleBook book={book} />
+                </div>
+              ))}
+            </div>
+            <Pagination
+              count={Math.ceil((count ?? limit) / limit)}
+              size="large"
+              page={filters.page}
+              onChange={(e, val) => {
+                setFilters({ ...filters, page: val });
+              }}
+            />
+          </div>
+        )}
       </main>
     </>
   );

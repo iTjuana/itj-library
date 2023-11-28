@@ -37,6 +37,11 @@ export const TransactionStatus = {
   Other: 3,
 };
 
+export const Role = {
+  User: 0,
+  Admin: 1,
+};
+
 export function enumObjToFilterItem(enumObj: any) {
   return Object.keys(enumObj).map((key, index) => {
     return {

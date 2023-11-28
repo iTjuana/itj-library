@@ -47,22 +47,26 @@ export const SimpleBook: React.FunctionComponent<BookProps> = ({ book }) => {
   if (!book) {
     return <></>;
   }
+
   return (
-    <Link
-      href={`/book/${book.isbn}`}
-      className="flex w-1/2 flex-col items-center sm:w-1/5"
-    >
-      <Image
-        src={book.image ?? "/cover-unavailable.jpg"}
-        width={300}
-        height={300}
-        alt="cover"
-      />
-      <p>{book.title ?? "Title is missing"}</p>
+    <div className="flex flex-col items-center gap-2">
+      <Link href={`/book/${book.isbn}`}>
+        <Image
+          src={book.image ?? "/cover-unavailable.jpg"}
+          width={300}
+          height={300}
+          alt="cover"
+        />
+      </Link>
+
+      <Link href={`/book/${book.isbn}`}>
+        <p>{book.title ?? "Title is missing"}</p>
+      </Link>
+
       <hr className="w-2/3" />
       <p className="text-[#556581]" title={book.authors ?? ""}>
         {book.authors ?? "Author(s) missing"}
       </p>
-    </Link>
+    </div>
   );
 };

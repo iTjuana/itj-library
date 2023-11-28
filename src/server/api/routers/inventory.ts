@@ -52,15 +52,12 @@ export const inventoryRouter = createTRPCRouter({
         where: {
           status: status,
           format: format,
-          OR: [
-            {
-              book: {
-                title: {
-                  contains: search,
-                },
-              },
+          book: {
+            language: language,
+            title: {
+              contains: search,
             },
-          ],
+          },
         },
         skip: (page - 1) * limit,
       });

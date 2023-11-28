@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Format, Language, Status, enumObjToFilterItem } from "utils/enum";
 import { type FilterItemInterface, FilterSelect } from "./filterSelect";
 import { Input } from "@mui/material";
@@ -23,8 +24,18 @@ interface FiltersProps {
 export const Filters = (props: FiltersProps) => {
   const { filters, setFilters } = props;
 
+  const [search, setSearch] = useState<string>("");
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setFilters({ ...filters, search });
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [search, filters, setFilters]);
+
   return (
-    <>
+    <div className="flex w-full justify-center gap-3">
       <FilterSelect
         label="Availability"
         value={filters.status}
@@ -52,9 +63,9 @@ export const Filters = (props: FiltersProps) => {
       <Input
         placeholder="Search for a book..."
         className="w-40"
-        value={filters.search}
-        onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
       />
-    </>
+    </div>
   );
 };
