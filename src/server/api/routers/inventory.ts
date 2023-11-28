@@ -3,6 +3,7 @@ import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
+  adminProcedure,
 } from "~/server/api/trpc";
 
 const zodInventory = z.object({
@@ -19,18 +20,14 @@ const zodInventory = z.object({
 });
 
 export const inventoryRouter = createTRPCRouter({
-  private: privateProcedure.query(() => {
-    return {
-      session: "Session",
-    };
-  }),
-  getFullInventory: publicProcedure.query(({ ctx, input }) => {
+  getFullInventory: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.inventory.findMany({
       include: {
         book: { select: { id: true, title: true, language: true } },
       },
     });
   }),
+
   getByFilter: publicProcedure
     .input(
       z.object({
@@ -62,6 +59,7 @@ export const inventoryRouter = createTRPCRouter({
         skip: (page - 1) * limit,
       });
     }),
+
   getByBookId: publicProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.prisma.inventory.findMany({
       where: {
@@ -69,36 +67,33 @@ export const inventoryRouter = createTRPCRouter({
       },
     });
   }),
+
   count: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.inventory.count();
   }),
-  add: publicProcedure
+
+  add: adminProcedure
     .input(zodInventory.required())
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       // const { success } = await ratelimit.limit(authorId);
       // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
-      const post = await ctx.prisma.inventory.create({
+      return ctx.prisma.inventory.create({
         data: input,
       });
-
-      return post;
     }),
-  update: publicProcedure
-    .input(zodInventory)
-    .mutation(async ({ ctx, input }) => {
-      // const { success } = await ratelimit.limit(authorId);
-      // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
-      const post = await ctx.prisma.inventory.update({
-        where: {
-          id: input.id,
-        },
-        data: input,
-      });
+  update: adminProcedure.input(zodInventory).mutation(({ ctx, input }) => {
+    // const { success } = await ratelimit.limit(authorId);
+    // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
-      return post;
-    }),
+    return ctx.prisma.inventory.update({
+      where: {
+        id: input.id,
+      },
+      data: input,
+    });
+  }),
 });
 
 // export type definition of API

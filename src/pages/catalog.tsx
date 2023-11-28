@@ -3,7 +3,6 @@ import { api } from "utils/trpc";
 import { CircularProgress, Pagination } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
 import { type Inventory } from "@prisma/client";
 import { Filters } from "~/components/filters";
 
