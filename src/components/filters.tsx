@@ -26,7 +26,7 @@ export const Filters = (props: FiltersProps) => {
 
   const [search, setSearch] = useState<string>("");
 
-  const inputsClassName = "md:w-40 sm:w-full";
+  const inputsClassName = "w-full md:w-40 sm:w-full";
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -37,7 +37,7 @@ export const Filters = (props: FiltersProps) => {
   }, [search, filters, setFilters]);
 
   return (
-    <div className="flex w-full justify-center gap-3 sm:flex-col md:flex-row">
+    <div className="flex w-full flex-col justify-center gap-3 sm:flex-col md:flex-row">
       <FilterSelect
         label="Availability"
         value={filters.status}

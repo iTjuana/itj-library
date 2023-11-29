@@ -107,7 +107,7 @@ const InventoryTable = ({
 
 const BookInfoPage = ({ book }: BookInfoPageProps) => {
   return (
-    <div className="flex flex-col items-center gap-14 sm:w-full md:w-3/4">
+    <div className="flex w-full flex-col items-center gap-14 sm:w-full md:w-3/4 lg:w-1/2">
       <div className="flex flex-col-reverse items-center justify-center gap-10 md:flex-row">
         <aside>
           <Image
