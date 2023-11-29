@@ -72,7 +72,7 @@ export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
           className="!flex !flex-col !items-center !justify-center"
           key={book?.title}
         >
-          <Link href={book.isbn ? `/books/${book.isbn}` : "#"}>
+          <Link href={book.isbn ? `/book/${book.isbn}` : "#"}>
             <Image
               src={book.image ?? "/cover-unavailable.jpg"}
               width={width}

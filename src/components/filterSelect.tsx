@@ -12,6 +12,7 @@ interface FilterSelectProps {
   setValue: (arg0: number) => void;
   items?: FilterItem[];
   children?: ReactElement;
+  className?: string;
 }
 
 export interface FilterItemInterface {
@@ -25,13 +26,14 @@ export const FilterSelect = ({
   setValue,
   items,
   children,
+  className,
 }: FilterSelectProps) => {
   return (
-    <>
+    <div className={className}>
       <TextField
         select
         label={label}
-        className="w-40"
+        className="w-full"
         value={value}
         onChange={(e) => setValue(parseInt(e.target.value))}
       >
@@ -43,6 +45,6 @@ export const FilterSelect = ({
             ))
           : children}
       </TextField>
-    </>
+    </div>
   );
 };

@@ -142,6 +142,7 @@ export const Borrow = ({
             <b>Due Date:</b> {getDatePlusDays(defaultBorrowDays).toDateString()}
           </Typography>
           <Button
+            className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
             onClick={() => {
               setBorrow(inventoryId, userIdFromSession, defaultBorrowDays);
               setOpen(false);

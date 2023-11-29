@@ -13,14 +13,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { type Book } from "@prisma/client";
 import { api } from "utils/trpc";
-import {
-  Status,
-  Format,
-  Condition,
-  Language,
-  getEnumKey,
-  TransactionStatus,
-} from "utils/enum";
+import { Status, Format, Condition, Language, getEnumKey } from "utils/enum";
 import { Borrow, Wishlist } from "~/components/transactions";
 
 interface BookInfoPageProps {
@@ -114,8 +107,8 @@ const InventoryTable = ({
 
 const BookInfoPage = ({ book }: BookInfoPageProps) => {
   return (
-    <div className="flex flex-col items-center gap-14">
-      <div className="flex items-center justify-center gap-16">
+    <div className="flex flex-col items-center gap-14 sm:w-full md:w-3/4">
+      <div className="flex flex-col-reverse items-center justify-center gap-10 md:flex-row">
         <aside>
           <Image
             src={book?.image ?? "/cover-unavailable.jpg"}
@@ -142,9 +135,7 @@ const BookInfoPage = ({ book }: BookInfoPageProps) => {
           </p>
         </div>
       </div>
-      <div>
-        <InventoryTable inventory={book?.inventory} />
-      </div>
+      <InventoryTable inventory={book?.inventory} />
     </div>
   );
 };
@@ -167,7 +158,7 @@ const BookPage = () => {
 
   return (
     <>
-      <main className="flex h-full justify-center bg-[#F7F8FC] pb-2 pt-8">
+      <main className="w-100 flex h-full items-center justify-center bg-[#F7F8FC] px-10 pb-2 pt-8">
         {book.isLoading ? (
           <CircularProgress />
         ) : !book.data ? (

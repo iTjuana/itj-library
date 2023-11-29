@@ -20,6 +20,7 @@ const Layout: React.FunctionComponent<Props> = ({
   children,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
   return (
     <>
       <Head>
@@ -48,7 +49,7 @@ const Layout: React.FunctionComponent<Props> = ({
             </div>
           </div>
 
-          <Navbar isOpen={isOpen} />
+          <Navbar isOpen={isOpen} onChangeRoute={() => setIsOpen(false)} />
         </header>
 
         <div className="grow">{children}</div>
