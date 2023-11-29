@@ -31,7 +31,7 @@ const Layout: React.FunctionComponent<Props> = ({
         <link rel="icon" href="/itj_logo_w.ico" />
       </Head>
       <div className="flex h-screen w-full flex-col">
-        <header className="flex w-full flex-col items-center bg-white px-8 py-6 drop-shadow-lg sm:px-32 md:flex-row">
+        <header className="flex w-full flex-col items-center bg-white px-8 py-6 drop-shadow-lg sm:px-5 md:flex-row md:px-32">
           <div className="flex w-full items-center justify-between">
             <Link href="/">
               <Image src="/itj_library.svg" alt="itj" width="100" height="32" />
