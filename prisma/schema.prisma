@@ -1,17 +1,17 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native"]
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../prisma-erd.png"
 }
 
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
-}
-
-generator erd {
-  provider = "prisma-erd-generator"
-  output = "../prisma-erd.png"
 }
 
 model Account {
@@ -65,64 +65,64 @@ model VerificationToken {
 }
 
 model Book {
-  id              String        @id @default(cuid())
-  isbn            String
-  title           String
-  subtitle        String?
-  description     String?
-  language        Int
-  authors         String?
-  subjects        String?
-  publishDates    String?
-  publishers      String?
-  numberOfPages   Int?
-  image           String?
-  inventory       Inventory[]
-  userNotes       Note[]
+  id            String      @id @default(cuid())
+  isbn          String
+  title         String
+  subtitle      String?
+  description   String?
+  language      Int
+  authors       String?
+  subjects      String?
+  publishDates  String?
+  publishers    String?
+  numberOfPages Int?
+  image         String?
+  inventory     Inventory[]
+  userNotes     Note[]
 }
 
 model Inventory {
-  id          String              @id @default(cuid())
-  bookId      String
-  status      Int
-  format      Int
-  condition   Int
-  bookOwner   String
-  tagId       String?
-  ownerNote   String?
-  isDonated   Boolean             @default(false)
-  dateAdded   DateTime            @default(now())
-  lastUpdate  DateTime            @updatedAt
-  book        Book                @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  id           String        @id @default(cuid())
+  bookId       String
+  status       Int
+  format       Int
+  condition    Int
+  bookOwner    String
+  tagId        String?
+  ownerNote    String?
+  isDonated    Boolean       @default(false)
+  dateAdded    DateTime      @default(now())
+  lastUpdate   DateTime      @updatedAt
+  book         Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
   @@index([bookId])
 }
 
 model Transaction {
-  id           String    @id @default(cuid())
-  userId       String
-  inventoryId  String
-  status       Int  
-  borrowDate   DateTime  @default(now())
-  dueDate      DateTime?
-  returnDate   DateTime?
-  reviewDate   DateTime?
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  inventory    Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  userId      String
+  inventoryId String
+  status      Int
+  borrowDate  DateTime  @default(now())
+  dueDate     DateTime?
+  returnDate  DateTime?
+  reviewDate  DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([inventoryId])
 }
 
 model Note {
-  id           String    @id @default(cuid())
-  userId       String
-  bookId       String
-  body         String
-  date         DateTime  @default(now())
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  id     String   @id @default(cuid())
+  userId String
+  bookId String
+  body   String
+  date   DateTime @default(now())
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book   Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([bookId])
