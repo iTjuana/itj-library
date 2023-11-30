@@ -21,9 +21,10 @@ const Home: NextPage = () => {
         >
           Books
         </h1>
-        {/* Carrousel */}
         {books.isLoading ? (
-          <CircularProgress />
+          <div className="flex justify-center">
+            <CircularProgress />
+          </div>
         ) : !books.data?.length ? (
           <></>
         ) : (
