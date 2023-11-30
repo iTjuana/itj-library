@@ -1,8 +1,11 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  privateProcedure,
+  adminProcedure,
+} from "~/server/api/trpc";
 import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 const userInput = z
   .object({
@@ -13,28 +16,19 @@ const userInput = z
   .required();
 
 export const usersRouter = createTRPCRouter({
-  // Get all users
-  getUsers: publicProcedure.query(async () => {
-    // TODO: Change to privateProcedure
-    return await prisma.user.findMany();
+  getUsers: adminProcedure.query(({ ctx, input }) => {
+    return ctx.prisma.user.findMany();
   }),
 
-  // Get all users
-  getUserCount: publicProcedure.query(async () => {
-    // TODO: Change to privateProcedure
-    return await prisma.user.count();
+  getUserCount: adminProcedure.query(({ ctx, input }) => {
+    return ctx.prisma.user.count();
   }),
 
-  // Add user
-  addUser: publicProcedure // TODO: Change to privateProcedure?
-    .input(userInput)
-    .mutation(async (opts) => {
-      const { input } = opts;
-      return await prisma.user.create({ data: input });
-    }),
+  addUser: adminProcedure.input(userInput).mutation(({ ctx, input }) => {
+    return ctx.prisma.user.create({ data: input });
+  }),
 
-  // Get user by id
-  findUserById: publicProcedure // TODO: Change to privateProcedure
+  findUserById: adminProcedure
     .input(
       z
         .object({
@@ -42,17 +36,15 @@ export const usersRouter = createTRPCRouter({
         })
         .required()
     )
-    .query(async (opts) => {
-      const { input } = opts;
-      return await prisma.user.findUnique({
+    .query(({ ctx, input }) => {
+      return ctx.prisma.user.findUnique({
         where: {
           id: input.id,
         },
       });
     }),
 
-  // Get user by email
-  findUserByEmail: publicProcedure // TODO: Change to privateProcedure
+  findUserByEmail: adminProcedure
     .input(
       z
         .object({
@@ -60,17 +52,15 @@ export const usersRouter = createTRPCRouter({
         })
         .required()
     )
-    .query(async (opts) => {
-      const { input } = opts;
-      return await prisma.user.findUnique({
+    .query(({ ctx, input }) => {
+      return ctx.prisma.user.findUnique({
         where: {
           email: input.email,
         },
       });
     }),
 
-  // Get user by email
-  getUserTransactionsById: publicProcedure // TODO: Change to privateProcedure
+  getUserTransactionsById: adminProcedure
     .input(
       z
         .object({
@@ -78,9 +68,8 @@ export const usersRouter = createTRPCRouter({
         })
         .required()
     )
-    .query(async (opts) => {
-      const { input } = opts;
-      return await prisma.transaction.findMany({
+    .query(({ ctx, input }) => {
+      return ctx.prisma.transaction.findMany({
         where: {
           userId: input.id,
         },
@@ -100,25 +89,52 @@ export const usersRouter = createTRPCRouter({
       });
     }),
 
-  // Update user
-  updateUser: publicProcedure // TODO: Change to privateProcedure
+  getUserBySession: privateProcedure.query(({ ctx }) => {
+    return ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.session?.user.id,
+      },
+    });
+  }),
+
+  getTransactionsBySession: privateProcedure.query(({ ctx }) => {
+    return ctx.prisma.transaction.findMany({
+      where: {
+        userId: ctx.session?.user.id,
+      },
+      include: {
+        inventory: {
+          select: {
+            status: true,
+            book: {
+              select: {
+                title: true,
+                isbn: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }),
+
+  updateUser: adminProcedure
     .input(
       z.object({
         id: z.string(),
         userInfo: userInput,
       })
     )
-    .mutation(async (opts) => {
-      const { input } = opts;
-      return await prisma.user.update({
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.user.update({
         where: {
           id: input.id,
         },
         data: input.userInfo,
       });
     }),
-  // Remove user
-  removeUser: publicProcedure // TODO: Change to privateProcedure
+
+  removeUser: adminProcedure
     .input(
       z
         .object({
@@ -126,9 +142,8 @@ export const usersRouter = createTRPCRouter({
         })
         .required()
     )
-    .mutation(async (opts) => {
-      const { input } = opts;
-      return await prisma.user.delete({
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.user.delete({
         where: {
           id: input.id,
         },

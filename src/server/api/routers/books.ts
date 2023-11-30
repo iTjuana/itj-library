@@ -1,10 +1,10 @@
-import { TRPCError } from "@trpc/server";
 import { logger } from "utils/logger";
 import { z } from "zod";
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
+  adminProcedure,
 } from "~/server/api/trpc";
 import { Prisma } from '@prisma/client';
 
@@ -41,10 +41,8 @@ type responseStructure = {
 }
 
 export const booksRouter = createTRPCRouter({
-  // Get all books
   getBooks: publicProcedure.query(({ ctx }) => {
     try {
-      // Logic to get all books
       logger.info("Getting all books...", {
         statusCode: ctx.res.statusCode,
         query: ctx.req.query,
@@ -55,7 +53,6 @@ export const booksRouter = createTRPCRouter({
     }
   }),
 
-  // Find book by id
   findBookById: publicProcedure
     .input(
       z
@@ -65,7 +62,6 @@ export const booksRouter = createTRPCRouter({
         .required()
     )
     .query(({ ctx, input }) => {
-      // Logic to find book by id
       return ctx.prisma.book.findUnique({
         where: {
           id: input.id,
@@ -73,9 +69,7 @@ export const booksRouter = createTRPCRouter({
       });
     }),
 
-  // Get book info for book page by id
   getBookInfoById: publicProcedure.input(z.string()).query(({ ctx, input }) => {
-    // Logic to find book by id
     return ctx.prisma.book.findUnique({
       where: {
         id: input,
@@ -94,11 +88,9 @@ export const booksRouter = createTRPCRouter({
     });
   }),
 
-  // Get book info for book page by isbn
   getBookInfoByIsbn: publicProcedure
     .input(z.string())
     .query(({ ctx, input }) => {
-      // Logic to find book by id
       return ctx.prisma.book.findFirst({
         where: {
           isbn: input,
@@ -117,7 +109,6 @@ export const booksRouter = createTRPCRouter({
       });
     }),
 
-  // Find books by id
   findBooksById: publicProcedure
     .input(z.array(z.string()))
     .query(({ ctx, input }) => {
@@ -128,8 +119,7 @@ export const booksRouter = createTRPCRouter({
       });
     }),
 
-  // Logic to add book
-  addBook: publicProcedure // TODO: Change to privateProcedure?
+  addBook: adminProcedure
     .input(z.object({
       inventoryData: bookInventory,
       bookData: bookInput
@@ -191,8 +181,7 @@ export const booksRouter = createTRPCRouter({
       }
     }),
 
-  // Update Book
-  updateBook: publicProcedure // TODO: Change to privateProcedure?
+  updateBook: adminProcedure
     .input(
       z
         .object({
@@ -202,7 +191,6 @@ export const booksRouter = createTRPCRouter({
         .required()
     )
     .mutation(({ ctx, input }) => {
-      // Logic to update book
       return ctx.prisma.book.update({
         where: {
           id: input.id,
@@ -211,8 +199,7 @@ export const booksRouter = createTRPCRouter({
       });
     }),
 
-  // Remove Book
-  removeBook: publicProcedure // TODO: Change to privateProcedure?
+  removeBook: adminProcedure
     .input(
       z
         .object({
@@ -221,7 +208,6 @@ export const booksRouter = createTRPCRouter({
         .required()
     )
     .mutation(({ ctx, input }) => {
-      // Logic to remove book
       return ctx.prisma.book.delete({
         where: {
           id: input.id,

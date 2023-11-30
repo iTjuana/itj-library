@@ -55,6 +55,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { getServerAuthSession } from "../auth";
 import { ZodError } from "zod";
+import { Role } from "utils/enum";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -108,6 +109,29 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
 });
 
 export const privateProcedure = t.procedure.use(enforceUserIsAuthed);
+
+const enforceUserIsAdmin = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  if (ctx.session.user.role !== Role.Admin) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+    });
+  }
+
+  return next({
+    ctx: {
+      userId: ctx.session.user.id,
+      role: ctx.session.user.role,
+    },
+  });
+});
+
+export const adminProcedure = t.procedure.use(enforceUserIsAdmin);
 
 /* Before 
 

@@ -3,6 +3,7 @@ import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
+  adminProcedure,
 } from "~/server/api/trpc";
 
 const createTransactionInput = z.object({
@@ -103,33 +104,29 @@ export const transactionRouter = createTRPCRouter({
   count: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.inventory.count();
   }),
-  add: publicProcedure
+  add: adminProcedure
     .input(createTransactionInput)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       // const { success } = await ratelimit.limit(authorId);
       // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
-      const post = await ctx.prisma.transaction.create({
+      return ctx.prisma.transaction.create({
         data: input,
       });
-
-      return post;
     }),
-  update: publicProcedure
+  update: adminProcedure
     .input(updateTransactionInput)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       const { id, ...data } = input;
       // const { success } = await ratelimit.limit(authorId);
       // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
-      const post = await ctx.prisma.transaction.update({
+      return ctx.prisma.transaction.update({
         where: {
           id: id,
         },
         data: data,
       });
-
-      return post;
     }),
 });
 
