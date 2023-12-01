@@ -29,6 +29,5 @@
     "**/*.cjs",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules"],
-  "ignorePatterns": ["src/scripts/*.ts"]
+  "exclude": ["node_modules"]
 }
