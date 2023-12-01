@@ -94,6 +94,17 @@ export const inventoryRouter = createTRPCRouter({
       data: input,
     });
   }),
+
+  updateStatus: privateProcedure
+    .input(zodInventory)
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.inventory.update({
+        where: {
+          id: input.id,
+        },
+        data: { status: input.status },
+      });
+    }),
 });
 
 // export type definition of API

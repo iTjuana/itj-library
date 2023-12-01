@@ -27,10 +27,10 @@ const updateTransactionInput = z.object({
 });
 
 export const transactionRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) => {
+  getAll: adminProcedure.query(({ ctx }) => {
     return ctx.prisma.transaction.findMany();
   }),
-  getByFilter: publicProcedure
+  getByFilter: privateProcedure
     .input(
       z.object({
         userId: z.string().optional(),
@@ -94,7 +94,7 @@ export const transactionRouter = createTRPCRouter({
     });
   }),
   // TODO: determine if this is needed or to use getByFilter
-  getByUserId: publicProcedure.input(z.string()).query(({ ctx, input }) => {
+  getByUserId: privateProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.prisma.transaction.findMany({
       where: {
         userId: input,
@@ -104,7 +104,7 @@ export const transactionRouter = createTRPCRouter({
   count: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.inventory.count();
   }),
-  add: adminProcedure
+  add: privateProcedure
     .input(createTransactionInput)
     .mutation(({ ctx, input }) => {
       // const { success } = await ratelimit.limit(authorId);
@@ -126,6 +126,21 @@ export const transactionRouter = createTRPCRouter({
           id: id,
         },
         data: data,
+      });
+    }),
+
+  updateStatus: adminProcedure
+    .input(updateTransactionInput)
+    .mutation(({ ctx, input }) => {
+      const { id, ...data } = input;
+      // const { success } = await ratelimit.limit(authorId);
+      // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+
+      return ctx.prisma.transaction.update({
+        where: {
+          id: id,
+        },
+        data: { status: input.status },
       });
     }),
 });
