@@ -48,8 +48,8 @@ model User {
   name          String
   email         String        @unique
   emailVerified DateTime?
-  role          Int        @default(0)
   image         String?
+  role          Int           @default(0)
   accounts      Account[]
   sessions      Session[]
   transactions  Transaction[]
@@ -69,10 +69,10 @@ model Book {
   isbn          String
   title         String
   subtitle      String?
-  description   String?
+  description   String?     @db.Text
   language      Int
   authors       String?
-  subjects      String?
+  subjects      String?     @db.Text
   publishDates  String?
   publishers    String?
   numberOfPages Int?
