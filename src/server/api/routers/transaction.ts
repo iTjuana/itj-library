@@ -129,7 +129,7 @@ export const transactionRouter = createTRPCRouter({
       });
     }),
 
-  updateStatus: adminProcedure
+  updateStatus: privateProcedure
     .input(updateTransactionInput)
     .mutation(({ ctx, input }) => {
       const { id, ...data } = input;
