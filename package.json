@@ -9,7 +9,8 @@
     "lint": "next lint",
     "start": "next start",
     "test": "jest --passWithNoTests",
-    "coverage": "jest --coverage --passWithNoTests"
+    "coverage": "jest --coverage --passWithNoTests",
+    "addbooks": "npx tsx src/scripts/addBooks.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -37,14 +38,17 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-slick": "^0.29.0",
+    "sheetdb-node": "^0.0.12",
     "slick-carousel": "^1.8.1",
     "superjson": "^1.13.1",
+    "ts-node": "^10.9.1",
+    "tsx": "^4.6.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^10.4.0",
     "@types/eslint": "^8.21.3",
-    "@types/node": "^18.15.5",
+    "@types/node": "^18.18.13",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",

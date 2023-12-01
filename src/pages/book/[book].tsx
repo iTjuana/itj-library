@@ -124,10 +124,7 @@ const BookInfoPage = ({ book }: BookInfoPageProps) => {
 
           <div className="my-3 text-justify">
             <p>
-              {book?.description} Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Dicta animi iusto quod error quas corrupti.
-              Aliquam laborum ut nobis pariatur debitis in, voluptatum,
-              provident impedit porro architecto recusandae quae odio!
+              {book?.description}
             </p>
           </div>
           <p className="my-3 text-gray-500">
