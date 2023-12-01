@@ -6,7 +6,7 @@ import {
   publicProcedure,
   adminProcedure,
 } from "~/server/api/trpc";
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
 const bookInput = z.object({
   isbn: z.string(),
@@ -36,9 +36,9 @@ const bookInventory = z.object({
 });
 
 type responseStructure = {
-  success: boolean,
-  message: string,
-}
+  success: boolean;
+  message: string;
+};
 
 export const booksRouter = createTRPCRouter({
   getBooks: publicProcedure.query(({ ctx }) => {
@@ -48,6 +48,23 @@ export const booksRouter = createTRPCRouter({
         query: ctx.req.query,
       });
       return ctx.prisma.book.findMany();
+    } catch (error) {
+      logger.error("There was an error getting books", error);
+    }
+  }),
+
+  getCarrouselBooks: publicProcedure.query(({ ctx }) => {
+    try {
+      logger.info("Getting carrousel books...", {
+        statusCode: ctx.res.statusCode,
+        query: ctx.req.query,
+      });
+      return ctx.prisma.book.findMany({
+        where: {
+          image: { not: null },
+        },
+        take: 9,
+      });
     } catch (error) {
       logger.error("There was an error getting books", error);
     }
@@ -120,63 +137,66 @@ export const booksRouter = createTRPCRouter({
     }),
 
   addBook: adminProcedure
-    .input(z.object({
-      inventoryData: bookInventory,
-      bookData: bookInput
-    }))
+    .input(
+      z.object({
+        inventoryData: bookInventory,
+        bookData: bookInput,
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       try {
         const exist = await ctx.prisma.book.findFirst({
-          where:{
-            isbn: input.bookData.isbn
+          where: {
+            isbn: input.bookData.isbn,
           },
           select: {
-            id: true
+            id: true,
           },
         });
 
         // If exist then we need to add book on Inventory table only
-        if (exist != null && exist.id != null){
+        if (exist != null && exist.id != null) {
           input.inventoryData.bookId = exist.id;
           const responseInventory = await ctx.prisma.inventory.create({
-            data: input.inventoryData
+            data: input.inventoryData,
           });
-          console.log('Book exist, data added to Inventory');
-        }
-        else{  //  If does not exist then we need to add book in Books and Inventory tables
+          console.log("Book exist, data added to Inventory");
+        } else {
+          //  If does not exist then we need to add book in Books and Inventory tables
           const responseBook = await ctx.prisma.book.create({
-            data : input.bookData
+            data: input.bookData,
           });
           const bookID: string = responseBook.id;
           input.inventoryData.bookId = bookID;
           const responseInventory = await ctx.prisma.inventory.create({
-            data: input.inventoryData
+            data: input.inventoryData,
           });
-          console.log('Book does not exist, data added to Inventory and Book');
+          console.log("Book does not exist, data added to Inventory and Book");
         }
-        return<responseStructure>{
+        return <responseStructure>{
           success: true,
-          message: `${input.bookData.title} added successfully`
-        }
-      } 
-      catch (e) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError ||
-            e instanceof Prisma.PrismaClientUnknownRequestError ||
-            e instanceof Prisma.PrismaClientRustPanicError ||
-            e instanceof Prisma.PrismaClientInitializationError ||
-            e instanceof Prisma.PrismaClientUnknownRequestError) {
+          message: `${input.bookData.title} added successfully`,
+        };
+      } catch (e) {
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError ||
+          e instanceof Prisma.PrismaClientUnknownRequestError ||
+          e instanceof Prisma.PrismaClientRustPanicError ||
+          e instanceof Prisma.PrismaClientInitializationError ||
+          e instanceof Prisma.PrismaClientUnknownRequestError
+        ) {
           logger.error("There was an error adding books", e);
-          return<responseStructure>{
+          return <responseStructure>{
             success: false,
-            message: `There was an error: ${e.message}`
-          }
+            message: `There was an error: ${e.message}`,
+          };
         }
         // (Need to plan with the team how to error handling)
-        return<responseStructure>{
+        return <responseStructure>{
           success: false,
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          message: `There was an error: ${e}`
-        }
+          message: `There was an error: ${e}`,
+        };
         throw e;
       }
     }),

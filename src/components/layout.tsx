@@ -58,11 +58,7 @@ const Layout: React.FunctionComponent<Props> = ({
           <p className="text-[#6D6E71]">
             © All rights reserved. Copyright 2023. Powered by iTjuana |
           </p>
-          <Link
-            className="text-primary no-underline"
-            href="https://app.micoach.io"
-            target="_blank"
-          >
+          <Link className="text-primary no-underline" href="/privacy-policy">
             <p className="font-bold">Privacy Policy</p>
           </Link>
         </footer>

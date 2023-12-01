@@ -4,7 +4,7 @@ import { api } from "utils/trpc";
 import { SimpleCarousel } from "~/components/carousel";
 
 const Home: NextPage = () => {
-  const books = api.books.getBooks.useQuery();
+  const books = api.books.getCarrouselBooks.useQuery();
 
   return (
     <>
