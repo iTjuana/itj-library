@@ -51,6 +51,15 @@ export function enumObjToFilterItem(enumObj: any) {
   });
 }
 
+export function enumObjToAutocompleteItem(enumObj: any) {
+  return Object.keys(enumObj).map((key, index) => {
+    return {
+      value: index,
+      label: key,
+    };
+  });
+}
+
 export function getEnumKey(enumObj: any, value: number | undefined) {
   return value !== undefined
     ? Object.keys(enumObj)[value]?.replaceAll("_", "-")

@@ -2,6 +2,7 @@ import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { CircularProgress } from "@mui/material";
 import { api } from "utils/trpc";
+import Dialog from 'src/components/dialog';
 import {
   Status,
   Format,
@@ -49,6 +50,9 @@ const Manage = () => {
     { field: "status", headerName: "Status", width: 90 },
     { field: "format", headerName: "Format", width: 90 },
     { field: "language", headerName: "Language", width: 90 },
+    { field: "bookOwner", headerName: "Book Owner", width: 120 },
+    { field: "isDonated", headerName: "Donated", width: 90 },
+    { field: "dateAdded", headerName: "Date added", width: 100 },
   ];
 
   const userCount = api.users.getUserCount.useQuery();
@@ -106,6 +110,7 @@ const Manage = () => {
             <div className="flex gap-2.5 px-8">
               <Button onClick={() => console.log("edit")}>Edit</Button>
               <Button onClick={() => console.log("delete")}>Delete</Button>
+              <Dialog textButton='Add'></Dialog>
             </div>
             {inventory.isLoading ? (
               <CircularProgress />
@@ -118,6 +123,9 @@ const Manage = () => {
                   status: getEnumKey(Status, book.status),
                   format: getEnumKey(Format, book.format),
                   language: getEnumKey(Language, book.book.language),
+                  bookOwner: book.bookOwner,
+                  isDonated: book.isDonated,
+                  dateAdded: book.dateAdded.toLocaleDateString(),
                   title: book.book.title,
                 }))}
                 columns={columns}

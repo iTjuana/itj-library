@@ -20,6 +20,7 @@ const Layout: React.FunctionComponent<Props> = ({
   children,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
   return (
     <>
       <Head>
@@ -31,7 +32,7 @@ const Layout: React.FunctionComponent<Props> = ({
         <link rel="icon" href="/itj_logo_w.ico" />
       </Head>
       <div className="flex h-screen w-full flex-col">
-        <header className="flex w-full flex-col items-center bg-white px-8 py-6 drop-shadow-lg sm:px-32 md:flex-row">
+        <header className="flex w-full flex-col items-center bg-white px-8 py-6 drop-shadow-lg sm:px-5 md:flex-row md:px-32">
           <div className="flex w-full items-center justify-between">
             <Link href="/">
               <Image src="/itj_library.svg" alt="itj" width="100" height="32" />
@@ -48,7 +49,7 @@ const Layout: React.FunctionComponent<Props> = ({
             </div>
           </div>
 
-          <Navbar isOpen={isOpen} />
+          <Navbar isOpen={isOpen} onChangeRoute={() => setIsOpen(false)} />
         </header>
 
         <div className="grow">{children}</div>
@@ -58,11 +59,7 @@ const Layout: React.FunctionComponent<Props> = ({
           <p className="text-[#6D6E71]">
             © All rights reserved. Copyright 2023. Powered by iTjuana |
           </p>
-          <Link
-            className="text-primary no-underline"
-            href="https://app.micoach.io"
-            target="_blank"
-          >
+          <Link className="text-primary no-underline" href="/privacy-policy">
             <p className="font-bold">Privacy Policy</p>
           </Link>
         </footer>

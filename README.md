@@ -1,12 +1,10 @@
-# Create T3 App
+# iTJ Library
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+iTj Library is an open source project for library management of the onsite office library. With this web aplication we are helping to keep better track of all library activities. This is a project for iTJ employees to contribute and aims to create an open source community.
 
-## What's next? How do I make an app with this?
+## Getting Started
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our **Slack Channel** _#open-source-project_ and ask for help.
 
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
@@ -14,19 +12,42 @@ If you are not familiar with the different technologies used in this project, pl
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
 
-## Learn More
+## Contribute
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+🎉 First of all, thanks for taking the time to contribute! 🎉
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+The following is a set of guidelines for contributing to the ITJ Library project, which are hosted in the iTjuana on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- [Contributing guide](https://github.com/iTjuana/itj-library/blob/main/CONTRIBUTING.md)
+- [Pull request template](https://github.com/iTjuana/itj-library/blob/main/pull_request_template.md)
 
-## How do I deploy this?
+## Overview
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Listed below are the basic steps for onboarding a new member to the team participating in the iTJ Library project, from the perspective of a Software Engineer.
 
-## Additional reads
+Access to resources:
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
+- [Figma Designs](https://www.figma.com/file/7tS84vnEWwKH3MvdniMeal/ItjLibrary?type=design&node-id=301%3A92&mode=design&t=2DRMkK2jS8cUtfJp-1)
+- [Diagrama App Mobile](https://lucid.app/lucidchart/75d83b69-2b31-4354-b5a7-7271acfd5102/edit?viewport_loc=2000%2C298%2C3920%2C1875%2C0_0&invitationId=inv_66836220-d2d3-41ff-ae53-b365e213f5f4)
+- [Architecture and flows](https://lucid.app/lucidchart/55fcd45b-2d51-4e2d-a825-204ab11755e6/edit?viewport_loc=-2747%2C-294%2C5875%2C3080%2C0_0&invitationId=inv_29f9528a-fc54-4ddc-a937-5e2396f4a6fa)
+- [User stories](https://docs.google.com/document/d/118hiJWdmPRVn7vtECq_tUolzYpJS5mKx/edit)
+
+## Set up
+
+- Request environment variables from the technical leader
+- Configure local development environment
+- Architecture
+  - Web app: Next.js App deployed in Vercel
+  - DB: PlanetScale
+  - Identity Management: Auth0 / NextAuth
+- Work tools
+  - Visual Studio Code
+  - GIT
+  - Node.js
+  - T3 Stack
+
+Execute the following commands:
+
+`npm install`
+
+`npm run dev`

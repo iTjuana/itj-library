@@ -4,7 +4,7 @@ import { api } from "utils/trpc";
 import { SimpleCarousel } from "~/components/carousel";
 
 const Home: NextPage = () => {
-  const books = api.books.getBooks.useQuery();
+  const books = api.books.getCarrouselBooks.useQuery();
 
   return (
     <>
@@ -21,9 +21,10 @@ const Home: NextPage = () => {
         >
           Books
         </h1>
-        {/* Carrousel */}
         {books.isLoading ? (
-          <CircularProgress />
+          <div className="flex justify-center">
+            <CircularProgress />
+          </div>
         ) : !books.data?.length ? (
           <></>
         ) : (

@@ -24,6 +24,14 @@ const config = {
         protocol: "https",
         hostname: "covers.openlibrary.org",
       },
+      {
+        protocol: "https",
+        hostname: "m.media-amazon.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.gonvill.com.mx",
+      },
     ],
   }, 
 };
