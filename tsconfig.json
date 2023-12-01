@@ -30,5 +30,5 @@
     "**/*.mjs"
   ],
   "exclude": ["node_modules"],
-  "ignorePatterns": ["src/scripts/*"]
+  "ignorePatterns": ["src/scripts/*.ts"]
 }
