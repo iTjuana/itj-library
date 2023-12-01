@@ -48,10 +48,10 @@ const useTransaction = () => {
     success: undefined,
     message: undefined,
   });
-  
+
   const createTransactionMutation = api.transaction.add.useMutation();
-  const updateTransactionMutation = api.transaction.update.useMutation();
-  const inventoryMutation = api.inventory.update.useMutation();
+  const updateTransactionMutation = api.transaction.updateStatus.useMutation();
+  const inventoryMutation = api.inventory.updateStatus.useMutation();
 
   const setBorrow = (
     inventoryId: string,
