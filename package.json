@@ -43,7 +43,7 @@
     "superjson": "^1.13.1",
     "ts-node": "^10.9.1",
     "tsx": "^4.6.1",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^10.4.0",
