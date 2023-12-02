@@ -33,7 +33,7 @@
     "@vercel/analytics": "^1.0.1",
     "dayjs": "^1.11.10",
     "next": "^13.2.4",
-    "next-auth": "^4.21.0",
+    "next-auth": "^4.24.5",
     "next-axiom": "^1.0.0-rc.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
