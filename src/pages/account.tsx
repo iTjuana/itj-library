@@ -133,7 +133,7 @@ const SessionComponent = () => {
   return (
     <div className="flex flex-col gap-4 rounded bg-white p-4 text-lg font-medium text-[#323232] sm:w-1/3">
       Not signed in <br />
-      <button onClick={() => void signIn()}>Log in</button>
+      <button onClick={() => void signIn("auth0")}>Log in</button>
     </div>
   );
 };
