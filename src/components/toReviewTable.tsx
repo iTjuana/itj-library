@@ -1,4 +1,5 @@
 import {
+  Button,
   Link,
   Paper,
   Table,
@@ -10,7 +11,8 @@ import {
 } from "@mui/material";
 import { Transaction } from "@prisma/client";
 import { getEnumKey, Status, TransactionStatus } from "utils/enum";
-import { Review } from "./transactions";
+import { ReviewModal } from "./transactions";
+import { useState } from "react";
 
 interface ToReviewProps {
   transactions:
@@ -32,9 +34,36 @@ interface ToReviewProps {
 export const ToReviewTable: React.FunctionComponent<ToReviewProps> = ({
   transactions,
 }) => {
+  const [openModal, setOpenModal] = useState(false);
+  const [books, setBooks] = useState(transactions);
+  const [selectedTransaction, setSelectedTransaction] = useState<{
+    id: string;
+    inventoryId: string;
+  } | null>(null);
+
+  const handleOnReview = () => {
+    setOpenModal(false);
+    setBooks((prev) => {
+      if (prev) {
+        return prev.filter((book) => book.id !== selectedTransaction?.id);
+      }
+      return prev;
+    });
+  };
+
   return (
     <>
-      {transactions && transactions.length > 0 && (
+      {selectedTransaction && (
+        <ReviewModal
+          open={openModal}
+          setOpen={setOpenModal}
+          inventoryId={selectedTransaction.inventoryId}
+          transactionId={selectedTransaction.id}
+          onReview={handleOnReview}
+        />
+      )}
+
+      {books && books.length > 0 && (
         <TableContainer component={Paper}>
           <Table aria-label="simple table">
             <TableHead>
@@ -49,7 +78,7 @@ export const ToReviewTable: React.FunctionComponent<ToReviewProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {transactions.map((transaction) => (
+              {books.map((transaction) => (
                 <TableRow
                   key={transaction.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -71,10 +100,17 @@ export const ToReviewTable: React.FunctionComponent<ToReviewProps> = ({
                     {transaction.reviewDate?.toLocaleDateString() ?? "-"}
                   </TableCell>
                   <TableCell align="right">
-                    <Review
-                      inventoryId={transaction.inventoryId}
-                      transactionId={transaction.id}
-                    />
+                    <Button
+                      onClick={() => {
+                        setOpenModal(true);
+                        setSelectedTransaction({
+                          id: transaction.id,
+                          inventoryId: transaction.inventoryId,
+                        });
+                      }}
+                    >
+                      Review
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
