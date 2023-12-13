@@ -2,7 +2,7 @@ import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { CircularProgress } from "@mui/material";
 import { api } from "utils/trpc";
-import Dialog from 'src/components/dialog';
+import Dialog from "src/components/dialog";
 import {
   Status,
   Format,
@@ -79,8 +79,8 @@ const Manage = () => {
   ];
 
   return (
-    <>
-      <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] pb-2 pt-5">
+    <main className="flex h-full flex-col items-center bg-[#F7F8FC] pb-2 pt-5">
+      <div className="flex flex-col items-center gap-6 px-10 sm:w-full md:w-3/5">
         <h1 className="text-4xl font-medium text-[#1C325F]">Dashboard</h1>
         {/* Stats */}
         <section className="flex max-w-3xl items-center gap-4">
@@ -104,13 +104,13 @@ const Manage = () => {
           })}
         </section>
         {/* Inventory */}
-        <section className="flex max-w-7xl flex-col items-center gap-4">
-          <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
+        <section className="flex w-full flex-col items-center gap-4">
+          <div className="flex  w-full flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">Inventory</h3>
             <div className="flex gap-2.5 px-8">
               <Button onClick={() => console.log("edit")}>Edit</Button>
               <Button onClick={() => console.log("delete")}>Delete</Button>
-              <Dialog textButton='Add'></Dialog>
+              <Dialog textButton="Add"></Dialog>
             </div>
             {inventory.isLoading ? (
               <CircularProgress />
@@ -118,6 +118,7 @@ const Manage = () => {
               <p>No books right now :c</p>
             ) : (
               <DataGrid
+                className="w-full"
                 rows={inventory.data.map((book) => ({
                   id: book.id,
                   status: getEnumKey(Status, book.status),
@@ -140,9 +141,8 @@ const Manage = () => {
             )}
           </div>
         </section>
-        {/* To Review */}
-        <section className="flex max-w-7xl flex-col items-center gap-4">
-          <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
+        <section className="flex w-full flex-col items-center gap-4">
+          <div className="flex w-full flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">To Review</h3>
             {transactions.isLoading ? (
               <CircularProgress />
@@ -153,8 +153,8 @@ const Manage = () => {
             )}
           </div>
         </section>
-      </main>
-    </>
+      </div>
+    </main>
   );
 };
 

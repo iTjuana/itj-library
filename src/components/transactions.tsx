@@ -67,7 +67,6 @@ export const Wishlist = ({
   action: number;
 }) => {
   const [open, setOpen] = useState(false);
-  const defaultBorrowDays = 14;
 
   return (
     <>
@@ -104,30 +103,25 @@ export const Wishlist = ({
   );
 };
 
-export const Borrow = ({
+export const BorrowBookModal = ({
+  open,
+  setOpen,
+  onBorrow,
   inventoryId,
-  userId,
 }: {
   inventoryId: string;
-  userId: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onBorrow: () => void;
 }) => {
-  const [open, setOpen] = useState(false);
   const defaultBorrowDays = 14;
 
-  // check if we should do this in main component (see if userId would be visible on html props)
   const userIdFromSession = getUserId();
 
-  const { data, setBorrow } = useTransaction();
+  const { data, borrowBook } = useTransaction();
 
   return (
     <>
-      <Button
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        Borrow
-      </Button>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -144,8 +138,12 @@ export const Borrow = ({
           <Button
             className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
             onClick={() => {
-              setBorrow(inventoryId, userIdFromSession, defaultBorrowDays);
-              setOpen(false);
+              borrowBook({
+                inventoryId,
+                userId: userIdFromSession,
+                daysBorrowed: defaultBorrowDays,
+                onBorrow,
+              });
             }}
           >
             Confirm
@@ -157,29 +155,23 @@ export const Borrow = ({
   );
 };
 
-export const Return = ({
+export const ReturnBookModal = ({
+  open,
+  setOpen,
   inventoryId,
   transactionId,
+  onReturn,
 }: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
   inventoryId: string;
   transactionId: string;
+  onReturn: () => void;
 }) => {
-  const [open, setOpen] = useState(false);
-
-  // check if we should do this in main component (see if userId would be visible on html props)
-  const userIdFromSession = getUserId();
-
   const { data, setNextStatus } = useTransaction();
 
   return (
     <>
-      <Button
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        Return
-      </Button>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -195,12 +187,12 @@ export const Return = ({
           </Typography>
           <Button
             onClick={() => {
-              setNextStatus(
+              setNextStatus({
                 inventoryId,
                 transactionId,
-                TransactionStatus.Returned
-              );
-              setOpen(false);
+                nextStatus: TransactionStatus.Returned,
+                onSetStatus: onReturn,
+              });
             }}
           >
             Confirm
@@ -212,29 +204,23 @@ export const Return = ({
   );
 };
 
-export const Review = ({
+export const ReviewModal = ({
+  open,
+  setOpen,
   inventoryId,
   transactionId,
+  onReview,
 }: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
   inventoryId: string;
   transactionId: string;
+  onReview: () => void;
 }) => {
-  const [open, setOpen] = useState(false);
-
-  // check if we should do this in main component (see if userId would be visible on html props)
-  const userIdFromSession = getUserId();
-
   const { data, setNextStatus } = useTransaction();
 
   return (
     <>
-      <Button
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        Review
-      </Button>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -250,11 +236,12 @@ export const Review = ({
           </Typography>
           <Button
             onClick={() => {
-              setNextStatus(
+              setNextStatus({
                 inventoryId,
                 transactionId,
-                TransactionStatus.Reviewed
-              );
+                nextStatus: TransactionStatus.Reviewed,
+                onSetStatus: onReview,
+              });
               setOpen(false);
             }}
           >
