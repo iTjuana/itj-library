@@ -1,4 +1,5 @@
 import {
+  Button,
   CircularProgress,
   Paper,
   Table,
@@ -8,13 +9,13 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { type Book } from "@prisma/client";
 import { api } from "utils/trpc";
 import { Status, Format, Condition, Language, getEnumKey } from "utils/enum";
-import { Borrow, Wishlist } from "~/components/transactions";
+import { BorrowBookModal } from "~/components/transactions";
+import { useState } from "react";
 
 interface BookInfoPageProps {
   book:
@@ -44,64 +45,93 @@ const InventoryTable = ({
       }[]
     | undefined;
 }) => {
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedInventoryId, setSelectedInventoryId] = useState<string>("");
+  const [inventoryBooks, setInventoryBooks] = useState(inventory);
+
+  const handleOnBorrowBook = () => {
+    setOpenModal(false);
+    setInventoryBooks(
+      inventoryBooks?.map((book) => {
+        if (book.id === selectedInventoryId) {
+          return {
+            ...book,
+            status: Status.Borrowed,
+          };
+        }
+        return book;
+      })
+    );
+  };
+
   return (
-    <TableContainer component={Paper} elevation={0}>
-      <Table aria-label="simple table">
-        <TableHead>
-          <TableRow
-            sx={{
-              "&:last-child td, &:last-child th": {
-                fontSize: "1rem",
-              },
-            }}
-          >
-            <TableCell>ID</TableCell>
-            <TableCell align="right">Status</TableCell>
-            <TableCell align="right">Format</TableCell>
-            <TableCell align="right">Condition</TableCell>
-            <TableCell align="right">Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {inventory?.map((row) => (
+    <>
+      <BorrowBookModal
+        inventoryId={selectedInventoryId}
+        open={openModal}
+        setOpen={setOpenModal}
+        onBorrow={handleOnBorrowBook}
+      />
+
+      <TableContainer component={Paper} elevation={0}>
+        <Table aria-label="simple table">
+          <TableHead>
             <TableRow
-              key={row.id}
               sx={{
                 "&:last-child td, &:last-child th": {
-                  border: 0,
-                  color: "#556581",
                   fontSize: "1rem",
                 },
               }}
             >
-              <TableCell component="th" scope="row">
-                {row.id}
-              </TableCell>
-              <TableCell align="right">
-                {getEnumKey(Status, row.status)}
-              </TableCell>
-              <TableCell align="right">
-                {getEnumKey(Format, row.format)}
-              </TableCell>
-              <TableCell align="right">
-                {getEnumKey(Condition, row.condition)}
-              </TableCell>
-              <TableCell align="right">
-                {row.status === Status.Available ? (
-                  <Borrow inventoryId={row.id} userId={row.bookId} />
-                ) : (
-                  <Wishlist
-                    inventoryId={row.id}
-                    userId={row.bookId}
-                    action={0}
-                  />
-                )}
-              </TableCell>
+              <TableCell>ID</TableCell>
+              <TableCell align="right">Status</TableCell>
+              <TableCell align="right">Format</TableCell>
+              <TableCell align="right">Condition</TableCell>
+              <TableCell align="right">Action</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {inventoryBooks?.map((row) => (
+              <TableRow
+                key={row.id}
+                sx={{
+                  "&:last-child td, &:last-child th": {
+                    border: 0,
+                    color: "#556581",
+                    fontSize: "1rem",
+                  },
+                }}
+              >
+                <TableCell component="th" scope="row">
+                  {row.id}
+                </TableCell>
+                <TableCell align="right">
+                  {getEnumKey(Status, row.status)}
+                </TableCell>
+                <TableCell align="right">
+                  {getEnumKey(Format, row.format)}
+                </TableCell>
+                <TableCell align="right">
+                  {getEnumKey(Condition, row.condition)}
+                </TableCell>
+                {row.status === Status.Available && (
+                  <TableCell align="right">
+                    <Button
+                      onClick={() => {
+                        setSelectedInventoryId(row.id);
+                        setOpenModal(true);
+                      }}
+                    >
+                      Borrow Book
+                    </Button>
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 
@@ -123,9 +153,7 @@ const BookInfoPage = ({ book }: BookInfoPageProps) => {
           <p className="my-3 text-gray-500">{book?.publishDates}</p>
 
           <div className="my-3 text-justify">
-            <p>
-              {book?.description}
-            </p>
+            <p>{book?.description}</p>
           </div>
           <p className="my-3 text-gray-500">
             {getEnumKey(Language, book?.language)}
