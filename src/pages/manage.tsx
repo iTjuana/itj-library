@@ -81,7 +81,7 @@ const Manage = () => {
   return (
     <main className="flex h-full flex-col items-center bg-[#F7F8FC] pb-2 pt-5">
       <div className="flex flex-col items-center gap-6 px-10 sm:w-full md:w-3/5">
-        <h1 className="text-4xl font-medium text-[#1C325F]">Dashboard</h1>
+        <h1 className="text-4xl font-medium">Dashboard</h1>
         {/* Stats */}
         <section className="flex max-w-3xl items-center gap-4">
           {stats.map((stat) => {
@@ -108,8 +108,8 @@ const Manage = () => {
           <div className="flex  w-full flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">Inventory</h3>
             <div className="flex gap-2.5 px-8">
-              <Button onClick={() => console.log("edit")}>Edit</Button>
-              <Button onClick={() => console.log("delete")}>Delete</Button>
+              <Button variant="contained" onClick={() => console.log("edit")}>Edit</Button>
+              <Button variant="contained" onClick={() => console.log("delete")}>Delete</Button>
               <Dialog textButton="Add"></Dialog>
             </div>
             {inventory.isLoading ? (

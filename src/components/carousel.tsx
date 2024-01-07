@@ -61,7 +61,6 @@ export const SimpleCarousel: React.FunctionComponent<CarouselProps> = (
   return (
     <Slider
       {...settings}
-      dots={dots}
       speed={speed}
       slidesToShow={slidesToShow}
       slidesToScroll={slidesToScroll}

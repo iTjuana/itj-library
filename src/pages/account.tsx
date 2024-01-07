@@ -188,12 +188,13 @@ const SessionComponent = () => {
                   <p className="font-light">{user.data?.email}</p>
                 </div>
               </section>
-              <button
+              <Button
+              variant="contained"
+              className="customButtonSignOut"
                 onClick={() => void signOut()}
-                className="rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700"
               >
                 Sign out
-              </button>
+              </Button>
             </>
           )}
         </div>
@@ -214,7 +215,7 @@ const Account = () => {
   return (
     <>
       <main className="flex h-full flex-col items-center gap-4 bg-[#F7F8FC] px-10 pb-2 pt-5">
-        <h1 className="text-3xl font-medium text-[#1C325F]">My Account</h1>
+        <h1 className="text-4xl font-medium">My Account</h1>
         <SessionComponent />
       </main>
     </>
