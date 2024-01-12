@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import * as React from 'react';
+import * as XLSX from 'xlsx';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -18,6 +20,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Autocomplete from '@mui/material/Autocomplete';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { styled } from '@mui/material/styles';
 import { Format, Language, Status, Condition, enumObjToAutocompleteItem } from "utils/enum";
 import { api } from "utils/trpc";
 
@@ -70,6 +74,19 @@ const optionsIsDonated = [
   { label: 'No', value: false },
 ];
 
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
+
 // Main Function (FormDialog)
 export default function FormDialog({textButton} : { textButton: string; }) {
   const [open, setOpen] = useState(false);
@@ -95,6 +112,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     dateAdded: new Date(),
   });
   
+  const [file, setFile] = useState<File | null>(null);
   const [textPublishDates, setTextPublishDates] = useState<Dayjs | null>(dayjs());
   const [objectAuthors, setObjectAuthors] = useState([{ authorName: "" }]);
   const [objectPublishers, setObjectPublishers] = useState([{ publisherName: "" }]);
@@ -134,6 +152,15 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     setObjectSubjects([{ subjectName: "" }]);
     setDateAdded(dayjs());
   }
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if ( event.target.files && event.target.files.length > 0){
+      setFile(event.target.files[0]);
+      console.log(event.target.files[0])
+    } else{
+      setFile(null)
+    }
+  };
 
   const handleAddInputAuthor = () => {
     setObjectAuthors([...objectAuthors, { authorName: "" }]);
@@ -229,9 +256,15 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) =>{
     e.preventDefault();
+    const formData = new FormData();
     const authorString = objectAuthors.map(s => s.authorName).toString();
     const publisherString = objectPublishers.map(s => s.publisherName).toString();
     const subjectString = objectSubjects.map(s => s.subjectName).toString();
+
+    if (file) {
+      formData.append('file', file)
+      console.log(`FORM DATA:\n${formData}`)
+    }
 
     const bookDataPrivate: bookStructure = {
       isbn: bookData.isbn,
@@ -491,6 +524,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
             </Grid>
           </DialogContent>
         <DialogActions>
+          <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />}> Upload file<VisuallyHiddenInput id="file" type="file" accept=".xlsx, .xls" onChange={handleFileChange} /></Button> 
           <Button onClick={handleClose}>Cancel</Button>
           <Button type="submit">{textButton}</Button>
         </DialogActions>
