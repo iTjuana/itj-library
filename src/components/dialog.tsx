@@ -154,13 +154,30 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   }
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if ( event.target.files && event.target.files.length > 0){
-      setFile(event.target.files[0]);
-      console.log(event.target.files[0])
-    } else{
-      setFile(null)
+    const selectedFile = event.target.files?.[0];
+    // Read excel file content
+    const reader = new FileReader();
+    reader.readAsBinaryString(selectedFile);
+    reader.onload = (e) => {
+      if(e !== null && e.target !== null) {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: "binary"});
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(sheet);
+        console.log("JSON");
+        console.log(json)
+
+      }
     }
+    //
+    setFile(selectedFile || null)
   };
+
+
+  const handleFileUpload = () => {
+    console.log("WIP")
+  }
 
   const handleAddInputAuthor = () => {
     setObjectAuthors([...objectAuthors, { authorName: "" }]);
@@ -525,6 +542,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
           </DialogContent>
         <DialogActions>
           <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />}> Upload file<VisuallyHiddenInput id="file" type="file" accept=".xlsx, .xls" onChange={handleFileChange} /></Button> 
+          <Button onClick={handleFileUpload} type="submit">Load File</Button>
           <Button onClick={handleClose}>Cancel</Button>
           <Button type="submit">{textButton}</Button>
         </DialogActions>
