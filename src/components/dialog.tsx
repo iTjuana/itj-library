@@ -280,7 +280,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
 
   return (
     <>
-      <Button onClick={handleClickOpen}>
+      <Button variant="contained" onClick={handleClickOpen}>
         {textButton}
       </Button>
       <Dialog open={open} onClose={handleClose}>
@@ -491,8 +491,8 @@ export default function FormDialog({textButton} : { textButton: string; }) {
             </Grid>
           </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">{textButton}</Button>
+          <Button variant="contained" onClick={handleClose}>Cancel</Button>
+          <Button variant="contained" type="submit">{textButton}</Button>
         </DialogActions>
         </Box>
       </Dialog>

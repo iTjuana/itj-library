@@ -148,7 +148,7 @@ const BookInfoPage = ({ book }: BookInfoPageProps) => {
           />
         </aside>
         <div className="max-w-3xl">
-          <h1 className="text-4xl font-medium text-[#1C325F]">{book?.title}</h1>
+          <h1 className="text-4xl font-medium">{book?.title}</h1>
           <p className="text-xl text-gray-500">{book?.authors}</p>
           <p className="my-3 text-gray-500">{book?.publishDates}</p>
 
@@ -168,7 +168,7 @@ const BookInfoPage = ({ book }: BookInfoPageProps) => {
 const BlankBookPage = () => {
   return (
     <>
-      <h1 className="text-4xl font-medium text-[#1C325F]">
+      <h1 className="text-4xl font-medium">
         Sorry, we don&apos;t have that book :/
       </h1>
     </>
