@@ -16,6 +16,8 @@ import { api } from "utils/trpc";
 import { Status, Format, Condition, Language, getEnumKey } from "utils/enum";
 import { BorrowBookModal } from "~/components/transactions";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 interface BookInfoPageProps {
   book:
@@ -48,6 +50,8 @@ const InventoryTable = ({
   const [openModal, setOpenModal] = useState(false);
   const [selectedInventoryId, setSelectedInventoryId] = useState<string>("");
   const [inventoryBooks, setInventoryBooks] = useState(inventory);
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
 
   const handleOnBorrowBook = () => {
     setOpenModal(false);
@@ -118,11 +122,17 @@ const InventoryTable = ({
                   <TableCell align="right">
                     <Button
                       onClick={() => {
-                        setSelectedInventoryId(row.id);
-                        setOpenModal(true);
+                        if (isAuthenticated) {
+                          setSelectedInventoryId(row.id);
+                          setOpenModal(true);
+                        } else {
+                          void signIn("auth0", {
+                            callbackUrl: window.location.href,
+                          });
+                        }
                       }}
                     >
-                      Borrow Book
+                      {isAuthenticated ? "Borrow Book" : "Login to borrow"}
                     </Button>
                   </TableCell>
                 )}
