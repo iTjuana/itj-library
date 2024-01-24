@@ -165,19 +165,19 @@ export default function FormDialog({textButton} : { textButton: string; }) {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(sheet);
-        console.log("JSON");
-        console.log(json)
+        console.log(`Books identified: ${json.length}`) // TODO: Show info [!!]
+        
+        for(const book of json){
+          console.log(book)
+          console.log(JSON.stringify(book))
+        }
+
 
       }
     }
     //
     setFile(selectedFile || null)
   };
-
-
-  const handleFileUpload = () => {
-    console.log("WIP")
-  }
 
   const handleAddInputAuthor = () => {
     setObjectAuthors([...objectAuthors, { authorName: "" }]);
@@ -273,15 +273,9 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) =>{
     e.preventDefault();
-    const formData = new FormData();
     const authorString = objectAuthors.map(s => s.authorName).toString();
     const publisherString = objectPublishers.map(s => s.publisherName).toString();
     const subjectString = objectSubjects.map(s => s.subjectName).toString();
-
-    if (file) {
-      formData.append('file', file)
-      console.log(`FORM DATA:\n${formData}`)
-    }
 
     const bookDataPrivate: bookStructure = {
       isbn: bookData.isbn,
@@ -542,7 +536,6 @@ export default function FormDialog({textButton} : { textButton: string; }) {
           </DialogContent>
         <DialogActions>
           <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />}> Upload file<VisuallyHiddenInput id="file" type="file" accept=".xlsx, .xls" onChange={handleFileChange} /></Button> 
-          <Button onClick={handleFileUpload} type="submit">Load File</Button>
           <Button onClick={handleClose}>Cancel</Button>
           <Button type="submit">{textButton}</Button>
         </DialogActions>
