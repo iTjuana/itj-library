@@ -16,6 +16,7 @@ import { ToReviewTable } from "~/components/toReviewTable";
 import { getServerSession } from "next-auth";
 import { authOptions } from "~/server/auth";
 import { GetServerSidePropsContext } from "next";
+import { ToBorrowTable } from "~/components/toBorrowTable";
 
 type Context = {
   req: GetServerSidePropsContext["req"];
@@ -57,9 +58,10 @@ const Manage = () => {
 
   const userCount = api.users.getUserCount.useQuery();
   const inventory = api.inventory.getFullInventory.useQuery();
-  const transactions = api.transaction.getByFilter.useQuery({
-    status: TransactionStatus.Returned,
-  });
+  const transactions = api.transaction.getAll.useQuery();
+  const toReviewTransactions = transactions?.data?.filter(
+    (transaction) => transaction.status === TransactionStatus.Returned
+  );
 
   const stats = [
     { name: "Active Users", value: userCount.data, color: "#088484" },
@@ -108,8 +110,12 @@ const Manage = () => {
           <div className="flex  w-full flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">Inventory</h3>
             <div className="flex gap-2.5 px-8">
-              <Button variant="contained" onClick={() => console.log("edit")}>Edit</Button>
-              <Button variant="contained" onClick={() => console.log("delete")}>Delete</Button>
+              <Button variant="contained" onClick={() => console.log("edit")}>
+                Edit
+              </Button>
+              <Button variant="contained" onClick={() => console.log("delete")}>
+                Delete
+              </Button>
               <Dialog textButton="Add"></Dialog>
             </div>
             {inventory.isLoading ? (
@@ -144,6 +150,21 @@ const Manage = () => {
         <section className="flex w-full flex-col items-center gap-4">
           <div className="flex w-full flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">To Review</h3>
+            {transactions.isLoading ? (
+              <CircularProgress />
+            ) : !toReviewTransactions?.length ? (
+              <p>No books to Review</p>
+            ) : (
+              <ToReviewTable transactions={toReviewTransactions} />
+            )}
+          </div>
+        </section>
+        {/* Borrow */}
+        <section className="flex max-w-7xl flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
+            <h3 className="text-2xl font-medium text-[#323232]">
+              Books Borrow
+            </h3>
             {transactions.isLoading ? (
               <CircularProgress />
             ) : !transactions.data?.length ? (
