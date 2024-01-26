@@ -81,7 +81,7 @@ const Manage = () => {
   ];
 
   return (
-    <main className="flex h-full flex-col items-center bg-[#F7F8FC] pb-2 pt-5">
+    <main className="h-full flex-col items-center bg-[#F7F8FC] pb-2 pt-5 md:flex">
       <div className="flex flex-col items-center gap-6 px-10 sm:w-full md:w-3/5">
         <h1 className="text-4xl font-medium">Dashboard</h1>
         {/* Stats */}
@@ -147,8 +147,9 @@ const Manage = () => {
             )}
           </div>
         </section>
+        {/* Review */}
         <section className="flex w-full flex-col items-center gap-4">
-          <div className="flex w-full flex-col items-center gap-3 rounded bg-white p-4">
+          <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">To Review</h3>
             {transactions.isLoading ? (
               <CircularProgress />
@@ -160,8 +161,8 @@ const Manage = () => {
           </div>
         </section>
         {/* Borrow */}
-        <section className="flex max-w-7xl flex-col items-center gap-4">
-          <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
+        <section className="flex w-full flex-col items-center gap-4">
+          <div className="flex w-full flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">
               Books Borrow
             </h3>
@@ -170,7 +171,7 @@ const Manage = () => {
             ) : !transactions.data?.length ? (
               <p>No books to Review</p>
             ) : (
-              <ToReviewTable transactions={transactions.data} />
+              <ToBorrowTable transactions={transactions.data} />
             )}
           </div>
         </section>
