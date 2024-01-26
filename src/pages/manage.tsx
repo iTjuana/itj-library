@@ -149,7 +149,7 @@ const Manage = () => {
         </section>
         {/* Review */}
         <section className="flex w-full flex-col items-center gap-4">
-          <div className="flex flex-col items-center gap-3 rounded bg-white p-4">
+          <div className="flex w-full flex-col items-center gap-3 rounded bg-white p-4">
             <h3 className="text-2xl font-medium text-[#323232]">To Review</h3>
             {transactions.isLoading ? (
               <CircularProgress />
