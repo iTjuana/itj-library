@@ -158,7 +158,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     // Read excel file content
     const reader = new FileReader();
     reader.readAsBinaryString(selectedFile);
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       if(e !== null && e.target !== null) {
         const data = e.target.result;
         const workbook = XLSX.read(data, { type: "binary"});
@@ -196,12 +196,14 @@ export default function FormDialog({textButton} : { textButton: string; }) {
           
           console.log(bookDataPrivate)
           console.log(InventoryDataPrivate)
-          // const response: responseStructure = await addBook.mutateAsync({
-          //   inventoryData: InventoryDataPrivate,
-          //   bookData: bookDataPrivate
-          // })
+          const response: responseStructure = await addBook.mutateAsync({
+            inventoryData: InventoryDataPrivate,
+            bookData: bookDataPrivate
+          })
+          // Finish iteration
         }
         handleClose();
+        <Alert severity="success">${json.length} were added.</Alert>
       }
     }
     setFile(selectedFile || null)
