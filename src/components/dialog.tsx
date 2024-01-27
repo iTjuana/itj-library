@@ -194,8 +194,6 @@ export default function FormDialog({textButton} : { textButton: string; }) {
             dateAdded: new Date(),
           }
           
-          console.log(bookDataPrivate)
-          console.log(InventoryDataPrivate)
           const response: responseStructure = await addBook.mutateAsync({
             inventoryData: InventoryDataPrivate,
             bookData: bookDataPrivate
