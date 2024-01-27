@@ -178,16 +178,16 @@ export default function FormDialog({textButton} : { textButton: string; }) {
             subjects: book.subjects,
             publishDates: book.publishDates,
             publishers: book.publishers,
-            numberOfPages: book.number_of_pages,
+            numberOfPages: book.numberOfPages,
             image: book.image
           }
       
           const InventoryDataPrivate: inventoryStructure = {
             bookId: "", // This data will be added once we add the book
-            status: inventoryData.status,
-            format: inventoryData.format,
-            condition: inventoryData.condition,
-            bookOwner: inventoryData.bookOwner,
+            status: book.status,
+            format: book.format,
+            condition: book.condition,
+            bookOwner: book.bookOwner,
             tagId: inventoryData.tagId,
             ownerNote: inventoryData.ownerNote,
             isDonated: inventoryData.isDonated,
