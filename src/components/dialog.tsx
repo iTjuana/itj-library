@@ -165,17 +165,45 @@ export default function FormDialog({textButton} : { textButton: string; }) {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(sheet);
-        console.log(`Books identified: ${json.length}`) // TODO: Show info [!!]
         
+        // Iterate Books
         for(const book of json){
-          console.log(book)
-          console.log(JSON.stringify(book))
+          const bookDataPrivate: bookStructure = {
+            isbn: book.isbn,
+            title: book.title,
+            subtitle: book.subtitle,
+            description: book.description,
+            language: book.language,
+            authors: book.authors,
+            subjects: book.subjects,
+            publishDates: book.publishDates,
+            publishers: book.publishers,
+            numberOfPages: book.number_of_pages,
+            image: book.image
+          }
+      
+          const InventoryDataPrivate: inventoryStructure = {
+            bookId: "", // This data will be added once we add the book
+            status: inventoryData.status,
+            format: inventoryData.format,
+            condition: inventoryData.condition,
+            bookOwner: inventoryData.bookOwner,
+            tagId: inventoryData.tagId,
+            ownerNote: inventoryData.ownerNote,
+            isDonated: inventoryData.isDonated,
+            dateAdded: new Date(),
+          }
+          
+          console.log(bookDataPrivate)
+          console.log(InventoryDataPrivate)
+          // const response: responseStructure = await addBook.mutateAsync({
+          //   inventoryData: InventoryDataPrivate,
+          //   bookData: bookDataPrivate
+          // })
         }
-
-
+        handleClose();
       }
     }
-    //
     setFile(selectedFile || null)
   };
 
