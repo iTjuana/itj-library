@@ -10,10 +10,7 @@ const PrivacyPolicy: NextPage = () => {
           text-center
           text-4xl
           font-bold
-          font-medium 
-          text-[#1C325F]
-        "
-        >
+          font-medium">
           iTj library by ITJ Inc. Privacy Policy
         </h1>
         {/* Based from micoach privacy policy */}

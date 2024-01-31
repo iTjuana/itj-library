@@ -13,6 +13,8 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "~/styles/carousel.css";
+import "~/styles/app.css";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 // tRPC setup from - https://trpc.io/docs/client/nextjs/setup
 import { api } from "utils/trpc";
@@ -20,19 +22,32 @@ import Layout from "~/components/layout";
 
 config.autoAddCss = false;
 
+const defaultTheme = createTheme();
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#04a491',
+      // dark: will be calculated from palette.secondary.main,
+      contrastText: 'black',
+    },
+  },
+});
+
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
   return (
     <SessionProvider session={session}>
+      <ThemeProvider theme={theme}>
       <Layout
         title="iTj Library"
-        description="iTj Library - Borrow and Donate Books"
-      >
+        description="iTj Library - Borrow and Donate Books">
         <Component {...pageProps} />
       </Layout>
       <Analytics />
+      </ThemeProvider>
     </SessionProvider>
   );
 };

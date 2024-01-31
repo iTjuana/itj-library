@@ -46,7 +46,7 @@ const Catalog = () => {
   return (
     <>
       <main className="flex h-full w-full flex-col items-center gap-5 bg-[#F7F8FC] px-4 pb-2 pt-5">
-        <h1 className="text-4xl font-medium text-[#1C325F]">Catalog</h1>
+        <h1 className="text-4xl font-medium">Catalog</h1>
 
         <Filters filters={filters} setFilters={setFilters} />
 
