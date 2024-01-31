@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useState } from 'react';
 import * as React from 'react';
 import * as XLSX from 'xlsx';
@@ -67,6 +68,29 @@ type inventoryStructure = {
   ownerNote: string,
   isDonated: boolean,
   dateAdded: Date,
+};
+
+type excelStructure = {
+  isbn: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  language: number;
+  authors: string;
+  subjects: string;
+  publishDates: string;
+  publishers: string;
+  numberOfPages: number;
+  image: string;
+  bookId: string;
+  status: number;
+  format: number;
+  condition: number;
+  bookOwner: string;
+  tagId: string;
+  ownerNote: string;
+  isDonated: boolean;
+  dateAdded: Date;
 };
 
 const optionsIsDonated = [
@@ -154,7 +178,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   }
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     const selectedFile = event.target.files?.[0]!;
     // Read excel file content
     const reader = new FileReader();
@@ -168,7 +192,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
         const json = XLSX.utils.sheet_to_json(sheet || {});
         
         // Iterate Books
-        for(const book of json){
+        for(const book of json as excelStructure[]){ 
           const bookDataPrivate: bookStructure = {
             isbn: book.isbn,
             title: book.title,
@@ -199,7 +223,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
             inventoryData: InventoryDataPrivate,
             bookData: bookDataPrivate
           })
-          // Finish iteration
+        // Finish iteration
         }
         handleClose();
       }
