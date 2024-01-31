@@ -28,7 +28,26 @@ const updateTransactionInput = z.object({
 
 export const transactionRouter = createTRPCRouter({
   getAll: adminProcedure.query(({ ctx }) => {
-    return ctx.prisma.transaction.findMany();
+    return ctx.prisma.transaction.findMany({
+      include: {
+        inventory: {
+          select: {
+            tagId: true,
+            book: {
+              select: {
+                title: true,
+                isbn: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
   }),
   getByFilter: privateProcedure
     .input(

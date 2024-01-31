@@ -229,7 +229,7 @@ export const ReviewModal = ({
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Return Book
+            Review Book
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             <b>Review Date:</b> {getDatePlusDays(0).toDateString()}
