@@ -112,7 +112,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     dateAdded: new Date(),
   });
   
-  const [file, setFile] = useState<File | any>;
+  const [file, setFile] = useState<File>();
   const [textPublishDates, setTextPublishDates] = useState<Dayjs | null>(dayjs());
   const [objectAuthors, setObjectAuthors] = useState([{ authorName: "" }]);
   const [objectPublishers, setObjectPublishers] = useState([{ publisherName: "" }]);
