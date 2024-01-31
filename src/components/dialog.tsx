@@ -112,7 +112,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     dateAdded: new Date(),
   });
   
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | any>;
   const [textPublishDates, setTextPublishDates] = useState<Dayjs | null>(dayjs());
   const [objectAuthors, setObjectAuthors] = useState([{ authorName: "" }]);
   const [objectPublishers, setObjectPublishers] = useState([{ publisherName: "" }]);
@@ -154,7 +154,8 @@ export default function FormDialog({textButton} : { textButton: string; }) {
   }
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const selectedFile = event.target.files?.[0]!;
     // Read excel file content
     const reader = new FileReader();
     reader.readAsBinaryString(selectedFile);
