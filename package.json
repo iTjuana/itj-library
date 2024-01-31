@@ -43,6 +43,7 @@
     "superjson": "^1.13.1",
     "ts-node": "^10.9.1",
     "tsx": "^4.6.1",
+    "xlsx": "^0.18.5",
     "zod": "^3.22.3"
   },
   "devDependencies": {

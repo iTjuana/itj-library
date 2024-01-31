@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { useState } from 'react';
+import * as React from 'react';
+import * as XLSX from 'xlsx';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -18,6 +21,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Autocomplete from '@mui/material/Autocomplete';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { styled } from '@mui/material/styles';
 import { Format, Language, Status, Condition, enumObjToAutocompleteItem } from "utils/enum";
 import { api } from "utils/trpc";
 
@@ -65,10 +70,46 @@ type inventoryStructure = {
   dateAdded: Date,
 };
 
+type excelStructure = {
+  isbn: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  language: number;
+  authors: string;
+  subjects: string;
+  publishDates: string;
+  publishers: string;
+  numberOfPages: number;
+  image: string;
+  bookId: string;
+  status: number;
+  format: number;
+  condition: number;
+  bookOwner: string;
+  tagId: string;
+  ownerNote: string;
+  isDonated: boolean;
+  dateAdded: Date;
+};
+
 const optionsIsDonated = [
   { label: 'Yes', value: true },
   { label: 'No', value: false },
 ];
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
 
 // Main Function (FormDialog)
 export default function FormDialog({textButton} : { textButton: string; }) {
@@ -95,6 +136,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     dateAdded: new Date(),
   });
   
+  const [file, setFile] = useState<File>();
   const [textPublishDates, setTextPublishDates] = useState<Dayjs | null>(dayjs());
   const [objectAuthors, setObjectAuthors] = useState([{ authorName: "" }]);
   const [objectPublishers, setObjectPublishers] = useState([{ publisherName: "" }]);
@@ -134,6 +176,60 @@ export default function FormDialog({textButton} : { textButton: string; }) {
     setObjectSubjects([{ subjectName: "" }]);
     setDateAdded(dayjs());
   }
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    const selectedFile = event.target.files?.[0]!;
+    // Read excel file content
+    const reader = new FileReader();
+    reader.readAsBinaryString(selectedFile);
+    reader.onload = async (e) => {
+      if(e !== null && e.target !== null) {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: "binary"});
+        const sheetName = workbook.SheetNames[0] == undefined ? "Books" : workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(sheet || {});
+        
+        // Iterate Books
+        for(const book of json as excelStructure[]){ 
+          const bookDataPrivate: bookStructure = {
+            isbn: book.isbn,
+            title: book.title,
+            subtitle: book.subtitle,
+            description: book.description,
+            language: book.language,
+            authors: book.authors,
+            subjects: book.subjects,
+            publishDates: book.publishDates,
+            publishers: book.publishers,
+            numberOfPages: book.numberOfPages,
+            image: book.image
+          }
+      
+          const InventoryDataPrivate: inventoryStructure = {
+            bookId: "", // This data will be added once we add the book
+            status: book.status,
+            format: book.format,
+            condition: book.condition,
+            bookOwner: book.bookOwner,
+            tagId: inventoryData.tagId,
+            ownerNote: inventoryData.ownerNote,
+            isDonated: inventoryData.isDonated,
+            dateAdded: new Date(),
+          }
+          
+          const response: responseStructure = await addBook.mutateAsync({
+            inventoryData: InventoryDataPrivate,
+            bookData: bookDataPrivate
+          })
+        // Finish iteration
+        }
+        handleClose();
+      }
+    }
+    setFile(selectedFile || null)
+  };
 
   const handleAddInputAuthor = () => {
     setObjectAuthors([...objectAuthors, { authorName: "" }]);
@@ -491,6 +587,7 @@ export default function FormDialog({textButton} : { textButton: string; }) {
             </Grid>
           </DialogContent>
         <DialogActions>
+          <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />}> Upload file<VisuallyHiddenInput id="file" type="file" accept=".xlsx, .xls" onChange={handleFileChange} /></Button> 
           <Button variant="contained" onClick={handleClose}>Cancel</Button>
           <Button variant="contained" type="submit">{textButton}</Button>
         </DialogActions>
