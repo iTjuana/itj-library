@@ -163,9 +163,9 @@ export default function FormDialog({textButton} : { textButton: string; }) {
       if(e !== null && e.target !== null) {
         const data = e.target.result;
         const workbook = XLSX.read(data, { type: "binary"});
-        const sheetName = workbook.SheetNames[0];
+        const sheetName = workbook.SheetNames[0] == undefined ? "Books" : workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(sheet);
+        const json = XLSX.utils.sheet_to_json(sheet || {});
         
         // Iterate Books
         for(const book of json){
