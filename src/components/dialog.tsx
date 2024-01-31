@@ -201,7 +201,6 @@ export default function FormDialog({textButton} : { textButton: string; }) {
           // Finish iteration
         }
         handleClose();
-        <Alert severity="success">${json.length} were added.</Alert>
       }
     }
     setFile(selectedFile || null)
